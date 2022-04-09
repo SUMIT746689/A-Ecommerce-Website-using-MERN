@@ -38,7 +38,7 @@ app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 
 //set a cookie parser
-app.use(cookieParser(process.env.cookie_secret));
+app.use(cookieParser());
 
 //set router
 app.use('/auth/signup',routerSignup)
