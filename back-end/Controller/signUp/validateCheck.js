@@ -3,7 +3,7 @@ const {check,validationResult} = require('express-validator');
 const createError = require('http-errors');
 
 //Internal library
-const { Signup } = require('../../../Model/signupSchema');
+const { Signup } = require('../../Model/signupSchema');
 
 const validate = [
     check('name')
@@ -14,18 +14,20 @@ const validate = [
         .isEmail()
         .withMessage('valid email required')
         .custom(async(value)=>{
-           const responseEmail = await Signup.findOne({email : value});
-            if(responseEmail.email){
+            
+           const responseEmail = await Signup.findOne({email : value.toLowerCase()});
+            if(responseEmail?.email){
                 throw createError('email is already used')
             }
-        }),
+        })
+        .toLowerCase(),
     check('mobile')
     .isMobilePhone('bn-BD')
     .withMessage('valid Bangladeshi number required')
     .custom(async(value)=>{
         const responseEmail = await Signup.findOne({mobile : value});
-        if(responseEmail.mobile){
-            throw createError('email is already used')
+        if(responseEmail?.mobile){
+            throw createError('mobile is already used')
         }
     }),
     check('password')
@@ -37,8 +39,19 @@ const validate = [
 //validation errors  handle
 const validationResultHandle = (req,res,next)=>{
     const validationErrorResult = validationResult(req);
-    console.log(validationErrorResult);
-    next()
+    
+    const validationErrorResultMapped = validationErrorResult.mapped(); 
+    if(validationErrorResult.errors.length > 0){
+        res.status(400).json({
+            errors : {
+                ...validationErrorResultMapped
+            }
+        })
+    }
+    else{
+        next();
+    }
+    
 } 
 
 module.exports = {

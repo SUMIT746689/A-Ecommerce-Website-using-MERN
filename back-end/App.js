@@ -1,13 +1,22 @@
 //External libraries
 const express = require('express');
+const cors = require('cors');
+const cookieParser = require('cookie-parser');
+
+//Internal library
 const { default: mongoose } = require('mongoose');
 const { defaultRouter, defaultErrorHandler } = require('./Controller/defaultErrorHandle/defaultErrorHandler');
 const { routerSignup } = require('./router/signup');
-
-//Internal library
+const { routerLogin } = require('./router/login');
 
 //create a application
 const app = express();
+
+//set other port request
+app.use(cors({
+    origin : '*'
+}));
+
 
 //config dotEnv 
 require('dotenv').config();
@@ -28,14 +37,19 @@ mongoose.connect(process.env.mongooseConnectionUrl)
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 
+//set a cookie parser
+app.use(cookieParser(process.env.cookie_secret));
+
 //set router
 app.use('/auth/signup',routerSignup)
+app.use('/auth/login',routerLogin)
 
 //application default route
 app.use(defaultRouter);
+
 //default error handler
 app.use(defaultErrorHandler);
 
-app.listen(3000,()=>{
-    console.log('application listening..')
+app.listen(process.env.PORT,()=>{
+    console.log('application listening..',`${process.env.PORT}`)
 });

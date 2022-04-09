@@ -19,8 +19,12 @@ const signUpSchema = mongoose.Schema({
     password : {
         type : String,
         required : true
+    },
+    avater : {
+        type : String
     }
-});
+},
+{timestamps: true});
 
 //create a model 
 const Signup = mongoose.model('Sign-up-users',signUpSchema);

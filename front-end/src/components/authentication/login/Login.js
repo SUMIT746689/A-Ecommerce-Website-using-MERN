@@ -1,7 +1,36 @@
-import React from 'react'
+import React, { useState } from 'react';
+import loginPageImage from '../../../images/login.svg'
 
 export default function Login() {
-  const loginPageImage = "https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.svg";
+  const [formValue,setFormValue] = useState({});
+  const [formResponse,setFormResponse] = useState({});
+
+
+  //input fields value 
+  const formValueChange = (event)=>{
+    const formValueCopy = {...formValue};
+    formValueCopy[event.target.name] = event.target.value
+    setFormValue(formValueCopy);
+  }
+  //form submit handle
+  const logInFormSubmitHandle =async(e)=>{
+    e.preventDefault();
+
+    //fetch post database
+    await fetch('http://localhost:5000/auth/login',{
+      method : 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body : JSON.stringify(formValue),
+     
+    })
+      .then((data)=>data.json())
+      .then((data)=>{
+        setFormResponse(data)
+      })
+      .catch((err)=>{console.log(err)})
+  }
 
   return (
   <section className="h-screen">
@@ -9,30 +38,43 @@ export default function Login() {
     <div className="flex justify-center items-center flex-wrap h-full g-6 text-gray-800">
       <div className="md:w-8/12 lg:w-6/12 mb-12 md:mb-0">
         <img src={loginPageImage}
-          className="w-full"
+          className="w-full px-12"
           alt="Phone img"
         />
       </div>
       <div className="md:w-8/12 lg:w-5/12 lg:ml-20">
+        {
+          formResponse.errors?.common ? 
+          <div className="p-4 mb-4 text-sm text-yellow-700 bg-yellow-100 rounded-lg dark:bg-yellow-200 dark:text-yellow-800" role="alert">
+            <span className="font-medium">!</span> {formResponse.errors?.common?.msg }
+          </div>
+          : ''
+        }
       {/* this is a login  Form */}
-        <form>
+        <form onSubmit={logInFormSubmitHandle}>
           {/* <!-- Email input --> */}
           
           <div className="mb-6">
             <input
+              name='emailOrPassword'
               type="text"
               className="form-control block w-full px-4 py-2 text-xl font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
-              placeholder="Email address"
-            />
+              placeholder="Email address or mobile number"
+              onChange={formValueChange}
+              required
+              />
           </div>
 
           {/* <!-- Password input --> */}
           <div className="mb-6">
             <input
+              name='password'
               type="password"
               className="form-control block w-full px-4 py-2 text-xl font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
               placeholder="Password"
-            />
+              onChange={formValueChange}
+              required
+              />
           </div>
 
           <div className="flex justify-between items-center mb-6">
