@@ -7,6 +7,7 @@ const { Signup } = require("../../Model/signupSchema")
 
 async function loginHandle(req,res,next){
     try{
+        console.log(req.body)
         //find is signup or not
         const databaseResponse = await Signup.findOne({
             $or : [
@@ -16,29 +17,26 @@ async function loginHandle(req,res,next){
         });
         
         if(Object.keys(databaseResponse).length > 0){
+            
             //compare is password correct or not 
             const passwordVerify = await bcrypt.compare(req.body.password,databaseResponse.password)
             console.log(passwordVerify)
+            
             if(passwordVerify){
                 //create a token with jwt
-                const jwtResponse =jwt.sign({
+                const jwtResponse = jwt.sign({
                     name : databaseResponse.name,
                     email : databaseResponse.email,
                     avatar : databaseResponse.avatar || ''
                 },
                     process.env.jwt_secret,
                     {expiresIn : Number(process.env.expireTime)});
-                console.log(jwtResponse);
+                    console.log(jwtResponse);
 
                 //send a cookie 
-                const data = res.cookie(process.env.auth_cookie_token_name,jwtResponse,
-                    {
-                        
-                        maxAge : Number(process.env.expireTime),
-                       })
-                //console.log(data);
-                //successfully create response send
-                console.log('success')
+                res.cookie(process.env.auth_cookie_token_name,jwtResponse, { maxAge: new Date (Number(process.env.expireTime)), httpOnly: true,signed :true })
+                //res.clearCookie(process.env.auth_cookie_token_name)
+                //successfully create response send            
                 res.status(200).json({
                     success : {
                         common : {

@@ -9,6 +9,8 @@ import {
 import Login from './components/authentication/login/Login';
 import Home from './components/home/Home';
 import Signup from './components/authentication/signup/Signup';
+import Products from './components/products/Products';
+import ProtectedRoute from './utilities/ProtectedRoute';
 
 function App() {
   return (
@@ -16,6 +18,13 @@ function App() {
       <Routes>
 
         <Route path='/home' element={<Home/>}/>
+
+        <Route  path='/products' element={
+          <ProtectedRoute>
+            <Products/>
+          </ProtectedRoute>
+        }/>
+        
         <Route path='/auth' >
           <Route path='login' element={<Login/>}/>
           <Route path='signup' element={<Signup/>}/>

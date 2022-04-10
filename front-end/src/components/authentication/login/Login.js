@@ -17,7 +17,7 @@ export default function Login() {
     e.preventDefault();
 
     //fetch post database
-    await fetch('http://localhost:5000/auth/login',{
+    await fetch('/auth/login',{
       method : 'POST',
       headers: {
         'Content-Type': 'application/json'

@@ -21,7 +21,7 @@ export default function Signup() {
     console.log(formValue);
 
     if(formValue.confirmPassword === formValue.password){
-      await fetch('http://localhost:5000/auth/signup',{
+      await fetch('/auth/signup',{
       method : 'POST',
       headers: {
         'Content-Type': 'application/json'
