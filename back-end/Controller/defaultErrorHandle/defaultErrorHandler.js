@@ -8,13 +8,14 @@ const defaultRouter = (req,res,next)=>{
 
 //default aerror handler
 const defaultErrorHandler = (err,req,res,next)=>{
-    res.status(err.status).json({
-        errors : {
-            common : {
-                message : 'default errors founds'
-            }
-        }
-    })
+    res.redirect('http://localhost:3000/*');
+    // res.status(err.status).json({
+    //     errors : {
+    //         common : {
+    //             message : 'default errors founds'
+    //         }
+    //     }
+    // })
 };
 
 module.exports = {

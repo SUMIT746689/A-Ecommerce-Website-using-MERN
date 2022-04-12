@@ -3,7 +3,7 @@ const {check,validationResult} = require('express-validator');
 const createError = require('http-errors');
 
 //Internal library
-const { Signup } = require('../../Model/signupSchema');
+const { SignupUser } = require('../../Model/signupSchema');
 
 const validate = [
     check('name')
@@ -15,7 +15,7 @@ const validate = [
         .withMessage('valid email required')
         .custom(async(value)=>{
             
-           const responseEmail = await Signup.findOne({email : value.toLowerCase()});
+           const responseEmail = await SignupUser.findOne({email : value.toLowerCase()});
             if(responseEmail?.email){
                 throw createError('email is already used')
             }
@@ -25,7 +25,7 @@ const validate = [
     .isMobilePhone('bn-BD')
     .withMessage('valid Bangladeshi number required')
     .custom(async(value)=>{
-        const responseEmail = await Signup.findOne({mobile : value});
+        const responseEmail = await SignupUser.findOne({mobile : value});
         if(responseEmail?.mobile){
             throw createError('mobile is already used')
         }

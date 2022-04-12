@@ -3,13 +3,13 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 //Internal library
-const { Signup } = require("../../Model/signupSchema")
+const {  SignupUser } = require("../../Model/signupSchema")
 
 async function loginHandle(req,res,next){
     try{
         console.log(req.body)
         //find is signup or not
-        const databaseResponse = await Signup.findOne({
+        const databaseResponse = await SignupUser.findOne({
             $or : [
                 {email : req.body.emailOrMobile},
                 {mobile : req.body.emailOrMobile}
@@ -35,7 +35,7 @@ async function loginHandle(req,res,next){
 
                 //send a cookie 
                 res.cookie(process.env.auth_cookie_token_name,jwtResponse, { maxAge: new Date (Number(process.env.expireTime)), httpOnly: true,signed :true })
-                //res.clearCookie(process.env.auth_cookie_token_name)
+                
                 //successfully create response send            
                 res.status(200).json({
                     success : {

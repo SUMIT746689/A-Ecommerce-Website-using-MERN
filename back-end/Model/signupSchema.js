@@ -27,8 +27,8 @@ const signUpSchema = mongoose.Schema({
 {timestamps: true});
 
 //create a model 
-const Signup = mongoose.model('Sign-up-users',signUpSchema);
+const SignupUser = mongoose.model('Sign-up-users',signUpSchema);
 
 module.exports={
-    Signup
+    SignupUser
 }

@@ -2,7 +2,7 @@
 const bcrypt = require('bcrypt');
 
 //Internal library
-const { Signup } = require("../../Model/signupSchema");
+const { SignupUser } = require("../../Model/signupSchema");
 
 
 
@@ -10,7 +10,7 @@ const databaseUploadHandle =async (req,res,next)=>{
     try{
         const bcryptPassword =await bcrypt.hash(req.body.password,Number(process.env.salt));
 
-        const signupResponse = await new Signup({
+        const signupResponse = await new SignupUser({
             ...req.body,
             password : bcryptPassword
         });
