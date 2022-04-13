@@ -11,6 +11,7 @@ googleRouter.get("/login/failed",(req,res,next)=>{
 })
 
 googleRouter.get("/login/success",(req,res,next)=>{
+    
     console.log(req.user)
     res.redirect(CLIENT_URL)
     // console.log(req.user);
@@ -20,11 +21,6 @@ googleRouter.get("/login/success",(req,res,next)=>{
     // else{
     //     res.end();
     // }
-})
-
-googleRouter.get('/logout',(req,res)=>{
-    req.logOut();
-    res.redirect(CLIENT_URL);
 })
 
 googleRouter.get('/',passport.authenticate("google", { scope: ["profile"] }))

@@ -10,9 +10,21 @@ const isAuthRouter = express.Router();
 isAuthRouter.get('/',async (req,res)=>{
     try {
         const auth_cookie = req.signedCookies[process.env.auth_cookie_token_name] || '';
-        const data = jwt.verify(auth_cookie,process.env.jwt_secret);
-        console.log(data);
-        res.status(200).json(true);
+        if(req.user){
+            
+            res.status(200).json({
+                success : true,
+                user : req.user
+            });
+        }else{
+            const data = jwt.verify(auth_cookie,process.env.jwt_secret);
+            
+            res.status(200).json({
+                success : true,
+                user : data
+            });
+        }
+        
     }
     catch(err){
         console.log(err.message)
