@@ -25,7 +25,7 @@ export default function Nav({isAuthorized,setIsAuthorized}) {
     }
 
     const dropdownItems = 
-    <div ref={dropDownElement} className="w-full block flex-grow lg:flex lg:items-center lg:w-auto">
+    <div ref={dropDownElement} className="w-full block flex-grow lg:hidden">
         <div className="text-sm lg:flex-grow">
         <Link to="/home" className="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4">
             Home
@@ -83,17 +83,16 @@ export default function Nav({isAuthorized,setIsAuthorized}) {
             {   
                 !isAuthorized ? 
                     <div className="lg:flex w-20 lg:w-auto">
-                
                         <Link to="/auth/login" className="inline-block text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-teal-500 hover:bg-white mt-4 lg:mt-0 mr-3" >Login</Link>
                         <Link to="/auth/signup" className="inline-block text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-teal-500 hover:bg-white mt-4 lg:mt-0" >Signup</Link>
                     </div>
                 :   
                     <div className='lg:flex'>
-                        <div to="/auth/login" className="flex justify-start text-sm py-2 leading-none rounded text-white  hover:border-transparent hover:text-teal-500 hover:bg-white mt-4 lg:mt-0 mr-3" >
+                        <div to="/auth/login" className="flex justify-start text-sm  leading-none rounded transition-all text-white hover:bg-white hover:bg-opacity-80  hover:border-transparent hover:text-teal-500 mt-4 px-2 lg:mt-0 mr-3" >
                             <img className='border-2 rounded-full w-10' src={isAuthorized.user.avatar} alt='userImages'/>
                             <div className='ml-2 pt-3'>{isAuthorized.user.name}</div>
                         </div> 
-                        <div onClick={logoutHandle} className="inline-block text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-teal-500 hover:bg-white mt-4 lg:mt-3 lg:h-8">Log out </div>
+                        <div onClick={logoutHandle} className="inline-block text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-teal-500 hover:bg-white mt-4 lg:mt-1 lg:h-8">Log out </div>
                     </div>
             }
             
