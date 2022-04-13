@@ -14,7 +14,11 @@ isAuthRouter.get('/',async (req,res)=>{
             
             res.status(200).json({
                 success : true,
-                user : req.user
+                user : {
+                    name : req.user.displayName,
+                    id: req.user.id,
+                    avatar : req.user.photos[0].value
+                }
             });
         }else{
             const data = jwt.verify(auth_cookie,process.env.jwt_secret);

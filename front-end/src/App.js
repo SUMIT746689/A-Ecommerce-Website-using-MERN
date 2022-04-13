@@ -21,14 +21,17 @@ function App() {
          const authentication = async()=>{
             await fetch('/isAuth')
                 .then(data=>data.json())
-                .then(data=>{setIsAuthorized(data)})
+                .then(data=>{
+                  setIsAuthorized(data);
+                  console.log(data);
+                })
                 .catch(err=>{console.log(err)})
          }
         authentication();
     },[]);
   return (
     <BrowserRouter>
-      <Nav isAuthorized={isAuthorized}/>
+      <Nav isAuthorized={isAuthorized} setIsAuthorized={setIsAuthorized}/>
       <Routes>
         <Route path='/home' element={<Home/>}/>
 
