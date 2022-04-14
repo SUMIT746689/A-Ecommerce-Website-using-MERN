@@ -1,6 +1,6 @@
-import {useState} from 'react'
+import {useState,useEffect} from 'react'
 
-function Varify() {
+function Varify({isAuthorized}) {
 
     const [value,setValue] = useState([{
         one : '',
@@ -10,7 +10,10 @@ function Varify() {
         five : '',
         six : ''
     }]);
+
+
     const [errors,setErrors] =useState({})
+    const [mobile,setmobile] =useState('')
 
     function otpValue (e){
         const valueData = {...value}
@@ -20,8 +23,14 @@ function Varify() {
     }
 
     let total = value.one+value.two+value.three+value.four+value.five+value.six ;
+    
     console.log(total.length !== 6);
+
+    
     async function varifyHandle(){
+
+        //set errors null
+        setErrors({});
         //check if 6 no input or not
         if(total.length !== 6) {
             return setErrors({
@@ -32,7 +41,7 @@ function Varify() {
                 }
             })
         }
-
+        //varify otp via api call
         await fetch('/auth/varify',{
             method : 'POST',
             headers: {
@@ -58,7 +67,7 @@ function Varify() {
                 <div className="w-full">
                     <div className="bg-white h-80 py-3 rounded text-center">
                         <h1 className="text-2xl text-sky-900 font-bold ">OTP Verification</h1>
-                        <div className="flex flex-col mt-4"> <span>Enter the OTP you received at</span> <span className="font-bold">+91 ******876</span> </div>
+                        <div className="flex flex-col mt-4"> <span>Enter the OTP you received at</span> <span className="font-bold">{isAuthorized.user?.mobile ? `${isAuthorized.user.mobile.slice(0,6)} . . . . . ${isAuthorized.user.mobile.slice(11)}`: ''}</span> </div>
                         {errors.common ? <div className=' text-red-600'>{`! ${errors.common.msg}`}</div> : '' } 
                         <div name="otp" className="flex flex-row justify-center text-center px-2 mt-5"> 
                             <input onChange={otpValue} className="m-2 border h-10 w-10 text-center form-control rounded hover:border-pink-500" type="text" name="one" maxLength="1"  /> 

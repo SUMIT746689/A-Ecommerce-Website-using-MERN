@@ -46,7 +46,7 @@ function App() {
 
           <Route path='varify' element={
             //<ProtectedRoute login='login' isAuthorized={isAuthorized}>
-              <Varify/>
+              <Varify isAuthorized ={isAuthorized}/>
             //</ProtectedRoute>
           }/>
           
