@@ -1,6 +1,7 @@
 import { useState,useEffect,useRef } from 'react';
 import { Link } from 'react-router-dom';
 import style from './Nav.module.css';
+import defaultUserImage from '../../images/defaultUserPhoto.svg'
 
 export default function Nav({isAuthorized,setIsAuthorized}) {
 
@@ -13,7 +14,7 @@ export default function Nav({isAuthorized,setIsAuthorized}) {
             method : 'POST'
         })
         .then(res=>res.json())
-        .then(data=>{setIsAuthorized(false);console.log(data.status)})
+        .then(data=>{setIsAuthorized(false)})
         .catch((err)=>{console.log(err)})
     }
 
@@ -21,7 +22,6 @@ export default function Nav({isAuthorized,setIsAuthorized}) {
         setShowDropDown(()=>!showDropDown);
         //showDropDown ? dropDownElement.current=dropDownElement.current + 'block' : dropDownElement.current ='hidden'
         console.log(dropDownElement)
-        console.log()
     }
 
     const dropdownItems = 
@@ -48,7 +48,12 @@ export default function Nav({isAuthorized,setIsAuthorized}) {
             :   
                 <div className='lg:flex'>
                     <div to="/auth/login" className="flex justify-start text-sm py-2 leading-none rounded text-white  hover:border-transparent hover:text-teal-500 hover:bg-white mt-4 lg:mt-0 mr-3" >
-                        <img className='border-2 rounded-full w-10' src={isAuthorized.user.avatar} alt='userImages'/>
+                        {
+                            isAuthorized.user.avatar ?
+                                <img className='border-2 rounded-full w-10' src={isAuthorized.user?.avatar} alt='userImages'/>
+                            :
+                                <img className='border-2 rounded-full w-10' src={defaultUserImage} alt='userImages'/>
+                        }
                         <div className='ml-2 pt-3'>{isAuthorized.user.name}</div>
                     </div> 
                     <div onClick={logoutHandle} className="inline-block text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-teal-500 hover:bg-white mt-4 lg:mt-3 lg:h-8">Log out </div>
@@ -89,7 +94,11 @@ export default function Nav({isAuthorized,setIsAuthorized}) {
                 :   
                     <div className='lg:flex'>
                         <div to="/auth/login" className="flex justify-start text-sm  leading-none rounded transition-all text-white hover:bg-white hover:bg-opacity-80  hover:border-transparent hover:text-teal-500 mt-4 px-2 lg:mt-0 mr-3" >
-                            <img className='border-2 rounded-full w-10' src={isAuthorized.user.avatar} alt='userImages'/>
+                            {isAuthorized.user.avatar ?
+                                <img className='border-2 rounded-full w-10' src={isAuthorized.user.avatar} alt='userImages'/>
+                            :
+                                <img className='border-2 rounded-full w-10' src={defaultUserImage} alt='userImages'/>   
+                            }
                             <div className='ml-2 pt-3'>{isAuthorized.user.name}</div>
                         </div> 
                         <div onClick={logoutHandle} className="inline-block text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-teal-500 hover:bg-white mt-4 lg:mt-1 lg:h-8">Log out </div>

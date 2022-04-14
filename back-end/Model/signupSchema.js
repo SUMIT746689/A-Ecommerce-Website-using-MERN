@@ -22,7 +22,8 @@ const signUpSchema = mongoose.Schema({
     },
     avater : {
         type : String
-    }
+    },
+    varify :[{id:String}]
 },
 {timestamps: true});
 

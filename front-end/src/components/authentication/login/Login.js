@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
+import { Navigate, useNavigate } from 'react-router-dom';
 import loginPageImage from '../../../images/login.svg'
 
-export default function Login() {
+export default function Login({setIsAuthorized}) {
   const [formValue,setFormValue] = useState({});
   const [formResponse,setFormResponse] = useState({});
-
+  const navigate =  useNavigate()
 
   //input fields value 
   const formValueChange = (event)=>{
@@ -25,9 +26,22 @@ export default function Login() {
       body : JSON.stringify(formValue),
      
     })
-      .then((data)=>data.json())
+      .then((data)=>{
+        if(data.status === 200){
+          
+        }
+        return data.json()})
       .then((data)=>{
         setFormResponse(data)
+        if(data.varify){
+          navigate('/auth/varify')
+        }
+        else if(data.success){
+          console.log(data);
+          setIsAuthorized(data);
+          navigate(-1) || navigate('/')
+        }
+        console.log(data);
       })
       .catch((err)=>{console.log(err)})
   }

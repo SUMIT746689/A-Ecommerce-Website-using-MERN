@@ -1,6 +1,9 @@
 //external library
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const { Otp } = require('../../Model/optModel');
+const otpGenerator = require('otp-generator')
+
 
 //Internal library
 const {  SignupUser } = require("../../Model/signupSchema")
@@ -8,6 +11,7 @@ const {  SignupUser } = require("../../Model/signupSchema")
 async function loginHandle(req,res,next){
     try{
         console.log(req.body)
+
         //find is signup or not
         const databaseResponse = await SignupUser.findOne({
             $or : [
@@ -27,7 +31,8 @@ async function loginHandle(req,res,next){
                 const jwtResponse = jwt.sign({
                     name : databaseResponse.name,
                     email : databaseResponse.email,
-                    avatar : databaseResponse.avatar || ''
+                    mobile : databaseResponse.mobile,
+                    avatar : databaseResponse.avatar || false
                 },
                     process.env.jwt_secret,
                     {expiresIn : Number(process.env.expireTime)});
@@ -36,8 +41,27 @@ async function loginHandle(req,res,next){
                 //send a cookie 
                 res.cookie(process.env.auth_cookie_token_name,jwtResponse, { maxAge: new Date (Number(process.env.expireTime)), httpOnly: true,signed :true })
                 
+                //create a otp in database
+
+                const otpSalt = bcrypt.genSaltSync(Number(process.env.salt));
+                
+                const otpGenarate = otpGenerator.generate(6, { upperCaseAlphabets: false, specialChars: false });
+                console.log(otpGenarate)
+                const otpPass = await bcrypt.hash(otpGenarate,otpSalt);
+                console.log(otpPass)
+                const otp = await Otp({
+                    mobile : databaseResponse.mobile,
+                    otp : otpPass
+                })
+                await otp.save();
+
                 //successfully create response send            
                 res.status(200).json({
+                    varify : true,
+                    user : {
+                        name : databaseResponse.name,
+                        avatar : databaseResponse.avatar
+                    },
                     success : {
                         common : {
                             msg : 'Login successfull'

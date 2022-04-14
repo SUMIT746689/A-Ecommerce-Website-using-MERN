@@ -18,6 +18,7 @@ const { googleRouter } = require('./router/googleRouter');
 const passportSetup = require('./utilities/passport');
 const { githubRouter } = require('./router/githubRouter');
 const { facebookRouter } = require('./router/facebookRouter');
+const { routerVarifyOtp } = require('./router/varifyOtp');
 
 //create a application
 const app = express();
@@ -61,7 +62,7 @@ app.use('/auth/signup',routerSignup);
 app.use('/auth/facebook',facebookRouter);
 app.use('/auth/google',googleRouter);
 app.use('/auth/github',githubRouter);
-
+app.use('/auth/varify',routerVarifyOtp);
 app.use('/auth/login',routerLogin);
 app.use('/auth/logout',logoutrouter);
 app.use('/home',homerouter);
