@@ -10,6 +10,17 @@ const routerVarifyOtp = express.Router();
 routerVarifyOtp.post('/',async(req,res,next)=>{
     
     try{
+        if(req.user){
+            return res.status(200).json({
+                varify: true,
+                success : true,
+                message : {
+                    common : {
+                        msg : 'successfully verified'
+                    }
+                }
+            })
+        }
         console.log(req.signedCookies)
         const auth_cookie = req.signedCookies[process.env.auth_cookie_token_name] || '';
         

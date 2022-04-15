@@ -51,8 +51,10 @@ async function loginHandle(req,res,next){
                         
                         const otpGenarate = otpGenerator.generate(6, { upperCaseAlphabets: false, specialChars: false });
                         console.log(otpGenarate)
+                         
                         const otpPass = await bcrypt.hash(otpGenarate,otpSalt);
                         console.log(otpPass)
+                        
                         const otp = await Otp({
                             mobile : databaseResponse.mobile,
                             otp : otpPass
