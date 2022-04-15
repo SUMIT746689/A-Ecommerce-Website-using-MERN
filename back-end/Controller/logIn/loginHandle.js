@@ -41,33 +41,55 @@ async function loginHandle(req,res,next){
                 //send a cookie 
                 res.cookie(process.env.auth_cookie_token_name,jwtResponse, { maxAge: new Date (Number(process.env.expireTime)), httpOnly: true,signed :true })
                 
-                //create a otp in database
+                //check varify token is correct or not
+                const varify_auth_token = req.signedCookies[process.env.varify_auth_cookie_token_name] || '';
+                jwt.verify(varify_auth_token,process.env.verify_jwt_secret,async (err)=>{
+                    if(err){
+                        console.log(err.message);
+                        //create a otp in database
+                        const otpSalt = bcrypt.genSaltSync(Number(process.env.salt));
+                        
+                        const otpGenarate = otpGenerator.generate(6, { upperCaseAlphabets: false, specialChars: false });
+                        console.log(otpGenarate)
+                        const otpPass = await bcrypt.hash(otpGenarate,otpSalt);
+                        console.log(otpPass)
+                        const otp = await Otp({
+                            mobile : databaseResponse.mobile,
+                            otp : otpPass
+                        })
+                        await otp.save();
 
-                const otpSalt = bcrypt.genSaltSync(Number(process.env.salt));
-                
-                const otpGenarate = otpGenerator.generate(6, { upperCaseAlphabets: false, specialChars: false });
-                console.log(otpGenarate)
-                const otpPass = await bcrypt.hash(otpGenarate,otpSalt);
-                console.log(otpPass)
-                const otp = await Otp({
-                    mobile : databaseResponse.mobile,
-                    otp : otpPass
-                })
-                await otp.save();
-
-                //successfully create response send            
-                res.status(200).json({
-                    varify : true,
-                    user : {
-                        name : databaseResponse.name,
-                        avatar : databaseResponse.avatar
-                    },
-                    success : {
-                        common : {
-                            msg : 'Login successfull'
-                        }
+                        //successfully create response send            
+                        res.status(200).json({
+                            varify : false,
+                            user : {
+                                name : databaseResponse.name,
+                                avatar : databaseResponse.avatar
+                            },
+                            success : {
+                                common : {
+                                    msg : 'Login varification'
+                                }
+                            }
+                        })
                     }
-                })
+                    else{
+                        //successfully create response send            
+                        return res.status(200).json({
+                            varify : true,
+                            user : {
+                                name : databaseResponse.name,
+                                avatar : databaseResponse.avatar
+                            },
+                            success : {
+                                common : {
+                                    msg : 'Login successfull'
+                                }
+                            }
+                        })
+                    }
+                });
+                
             }
             else{
                 res.status(404).json({

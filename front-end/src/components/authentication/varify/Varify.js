@@ -1,6 +1,7 @@
 import {useState,useEffect} from 'react'
+import { Navigate, useNavigate } from 'react-router-dom';
 
-function Varify({isAuthorized}) {
+function Varify({setFetchData,isAuthorized}) {
 
     const [value,setValue] = useState([{
         one : '',
@@ -12,8 +13,8 @@ function Varify({isAuthorized}) {
     }]);
 
 
-    const [errors,setErrors] =useState({})
-    const [mobile,setmobile] =useState('')
+    const [errors,setErrors] =useState({});
+    const navigate = useNavigate()
 
     function otpValue (e){
         const valueData = {...value}
@@ -22,6 +23,7 @@ function Varify({isAuthorized}) {
         console.log(value)
     }
 
+    //total input value
     let total = value.one+value.two+value.three+value.four+value.five+value.six ;
     
     console.log(total.length !== 6);
@@ -51,6 +53,10 @@ function Varify({isAuthorized}) {
         })
         .then(data=>data.json())
         .then(data=>{
+            if(data.varify){
+                setFetchData(true);
+                navigate('/');
+            }
             console.log(data);
             if(data.errors){
                 setErrors(data.errors);

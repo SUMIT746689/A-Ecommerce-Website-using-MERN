@@ -1,23 +1,14 @@
 
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate, Route, useNavigate } from "react-router-dom";
 
 
-function ProtectedRoute({isAuthorized,login,children,signup}) {
-    
+export function ProtectedRoute({children,isAuthorized}) {
 
-    console.log('value' , isAuthorized, login)
-    console.log(!isAuthorized) ;
-
-    if(isAuthorized === false){
-        return <Navigate to='/auth/login' replace />
-    }
-    else if(isAuthorized === true && login === 'login' ){
-        return <Navigate to='/home' replace />
-    }
-    else{
-        return children
-    }
+    return isAuthorized ? children : <Navigate to="/auth/login" />;
   
 }
 
-export default ProtectedRoute
+export function PrivateRoute({children,isAuthorized}){
+    console.log(isAuthorized)
+    return isAuthorized ? <Navigate to="/"/> : children ;
+}

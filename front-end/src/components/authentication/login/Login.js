@@ -33,13 +33,14 @@ export default function Login({setIsAuthorized}) {
         return data.json()})
       .then((data)=>{
         setFormResponse(data)
-        if(data.varify){
+        if(!data.varify){
+          console.log(data.varify)
           navigate('/auth/varify')
         }
         else if(data.success){
           console.log(data);
           setIsAuthorized(data);
-          navigate(-1) || navigate('/')
+          navigate('/')
         }
         console.log(data);
       })

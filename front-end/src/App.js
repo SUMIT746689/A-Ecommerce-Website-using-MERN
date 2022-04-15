@@ -10,13 +10,14 @@ import Login from './components/authentication/login/Login';
 import Home from './components/home/Home';
 import Signup from './components/authentication/signup/Signup';
 import Products from './components/products/Products';
-import ProtectedRoute from './utilities/ProtectedRoute';
+import {PrivateRoute, ProtectedRoute} from './utilities/ProtectedRoute';
 import ErrorPage from './components/errorPage/ErrorPage';
 import { useEffect, useState } from "react";
 import Varify from './components/authentication/varify/Varify';
 
 function App() {
     const [isAuthorized,setIsAuthorized] = useState(false);
+    const [fetchData,setFetchData] = useState(false);
 
     useEffect (()=>{
          const authentication = async()=>{
@@ -29,15 +30,15 @@ function App() {
                 .catch(err=>{console.log(err)})
          }
         authentication();
-    },[]);
+    },[fetchData]);
   return (
     <BrowserRouter>
       <Nav isAuthorized={isAuthorized} setIsAuthorized={setIsAuthorized}/>
       <Routes>
         <Route path='/home' element={<Home/>}/>
-
+        <Route path='/' element={<Home/>}/>
         <Route  path='/products' element={
-          <ProtectedRoute isAuthorized={isAuthorized}>
+          <ProtectedRoute isAuthorized={isAuthorized} >
             <Products/>
           </ProtectedRoute>
         }/>
@@ -45,24 +46,24 @@ function App() {
         <Route path='/auth' >
 
           <Route path='varify' element={
-            //<ProtectedRoute login='login' isAuthorized={isAuthorized}>
-              <Varify isAuthorized ={isAuthorized}/>
-            //</ProtectedRoute>
+            <PrivateRoute isAuthorized={isAuthorized}>
+              <Varify setFetchData={setFetchData} isAuthorized ={isAuthorized}/>
+            </PrivateRoute>
           }/>
           
           <Route path='login' element={
-            //<ProtectedRoute login='login' isAuthorized={isAuthorized}>
+            <PrivateRoute isAuthorized={isAuthorized}>
               <Login setIsAuthorized={setIsAuthorized} />
-            //</ProtectedRoute>
+            </PrivateRoute>
           }/>
           <Route path='signup' element={
-            //<ProtectedRoute signup='signup' isAuthorized={isAuthorized}>
+            <PrivateRoute isAuthorized={isAuthorized}>
               <Signup/>
-            //</ProtectedRoute>
+            </PrivateRoute>
           }/>
          
         </Route>
-        <Route path='/' element={<Home/>}/>
+        
         <Route path='*' element={<ErrorPage/>}/>
         
       </Routes>

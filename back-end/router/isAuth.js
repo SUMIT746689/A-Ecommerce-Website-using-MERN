@@ -9,7 +9,7 @@ const isAuthRouter = express.Router();
 
 isAuthRouter.get('/',async (req,res)=>{
     try {
-        const auth_cookie = req.signedCookies[process.env.auth_cookie_token_name] || '';
+        
         if(req.user){
             
             res.status(200).json({
@@ -21,7 +21,11 @@ isAuthRouter.get('/',async (req,res)=>{
                 }
             });
         }else{
+            const auth_cookie = req.signedCookies[process.env.auth_cookie_token_name] || '';
             const data = jwt.verify(auth_cookie,process.env.jwt_secret);
+            
+            const varify_auth_token = req.signedCookies[process.env.varify_auth_cookie_token_name] || '';
+            const varifydata = jwt.verify(auth_cookie,process.env.jwt_secret);
             
             res.status(200).json({
                 success : true,
