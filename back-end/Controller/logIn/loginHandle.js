@@ -10,7 +10,6 @@ const {  SignupUser } = require("../../Model/signupSchema")
 
 async function loginHandle(req,res,next){
     try{
-        console.log(req.body)
 
         //find is signup or not
         const databaseResponse = await SignupUser.findOne({
@@ -24,7 +23,7 @@ async function loginHandle(req,res,next){
             
             //compare is password correct or not 
             const passwordVerify = await bcrypt.compare(req.body.password,databaseResponse.password)
-            console.log(passwordVerify)
+            //console.log(Object.keys(passwordVerify))
             
             if(passwordVerify){
                 //create a token with jwt
@@ -37,13 +36,24 @@ async function loginHandle(req,res,next){
                     process.env.jwt_secret,
                     {expiresIn : Number(process.env.expireTime)});
                     console.log(jwtResponse);
-
+                
                 //send a cookie 
                 res.cookie(process.env.auth_cookie_token_name,jwtResponse, { maxAge: new Date (Number(process.env.expireTime)), httpOnly: true,signed :true })
                 
+                let verifyId = '';
+
+                if(databaseResponse.verify.length>0 && Object.keys(req.signedCookies)?.length>0){
+                    //check if verify token id founds in database
+                    Object.keys(req.signedCookies).forEach((value)=>{
+                        if(value.includes(databaseResponse.verify)){
+                            verifyId = value;
+                        }
+                        
+                    })
+                }
+                
                 //check varify token is correct or not
-                const varify_auth_token = req.signedCookies[process.env.varify_auth_cookie_token_name] || '';
-                jwt.verify(varify_auth_token,process.env.verify_jwt_secret,async (err)=>{
+                jwt.verify(req.signedCookies[verifyId],process.env.verify_jwt_secret,async (err)=>{
                     if(err){
                         console.log(err.message);
                         //create a otp in database
@@ -63,12 +73,8 @@ async function loginHandle(req,res,next){
 
                         //successfully create response send            
                         res.status(200).json({
-                            varify : false,
-                            user : {
-                                name : databaseResponse.name,
-                                avatar : databaseResponse.avatar
-                            },
-                            success : {
+                            verify : false,
+                            message : {
                                 common : {
                                     msg : 'Login varification'
                                 }
@@ -78,12 +84,8 @@ async function loginHandle(req,res,next){
                     else{
                         //successfully create response send            
                         return res.status(200).json({
-                            varify : true,
-                            user : {
-                                name : databaseResponse.name,
-                                avatar : databaseResponse.avatar
-                            },
-                            success : {
+                            verify : true,
+                            message : {
                                 common : {
                                     msg : 'Login successfull'
                                 }

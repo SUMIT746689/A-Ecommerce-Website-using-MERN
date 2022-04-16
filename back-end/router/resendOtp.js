@@ -49,8 +49,6 @@ routerResendOtp.post('/',async(req,res,next)=>{
             await otp.save();
 
             res.status(200).json({
-                varify : false,
-                success : true,
                 message : {
                     common : {
                         msg : 'successfully verified'

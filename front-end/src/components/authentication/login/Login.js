@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import loginPageImage from '../../../images/login.svg'
 
-export default function Login({setIsAuthorized}) {
+export default function Login({fetchData,setFetchData}) {
   const [formValue,setFormValue] = useState({});
   const [formResponse,setFormResponse] = useState({});
   const navigate =  useNavigate()
@@ -36,14 +36,14 @@ export default function Login({setIsAuthorized}) {
           console.log(data);
           return setFormResponse(data)
         }
-        if(!data.varify){
-          console.log(data.varify)
-          navigate('/auth/varify')
+        else if(!data.verify){
+          console.log(data.verify)
+          navigate('/auth/verify')
         }
-        else if(data.success){
+        else if(data.message){
           console.log(data);
-          setIsAuthorized(data);
-          navigate('/')
+          setFetchData((e)=> !e);
+          navigate('/');
         }
         console.log(data);
       })

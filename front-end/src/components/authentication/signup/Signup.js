@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import signUpPageImage from "../../../images/signup.svg";
 
@@ -6,6 +6,7 @@ export default function Signup() {
   const [formValue,setFormValue] = useState({});
   const [formResponse,setFormResponse] = useState({});
   const navigate = useNavigate();
+
   //input fields value 
   const formValueChange =(event)=>{
     const formValueCopy = {...formValue};
@@ -33,7 +34,7 @@ export default function Signup() {
       .then((data)=>{
         setFormResponse(data);
         if(data.message){
-          return navigate('/auth/varify');
+          return navigate('/auth/verify');
         }
       })
       .catch((err)=>{console.log(err)})

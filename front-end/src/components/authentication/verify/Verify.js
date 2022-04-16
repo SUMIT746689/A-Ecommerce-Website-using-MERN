@@ -1,7 +1,7 @@
 import {useState,useEffect} from 'react'
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
-function Varify({setFetchData,isAuthorized}) {
+function Verify({setFetchData}) {
 
     const [value,setValue] = useState([{
         one : '',
@@ -11,7 +11,7 @@ function Varify({setFetchData,isAuthorized}) {
         five : '',
         six : ''
     }]);
-
+    const [mobile,setMobile] = useState('');
 
     const [errors,setErrors] =useState({});
     const navigate = useNavigate()
@@ -22,6 +22,21 @@ function Varify({setFetchData,isAuthorized}) {
         setValue(valueData);
         console.log(value)
     }
+
+    useEffect(()=>{ 
+        async function getVerify(){
+            await fetch('/auth/verify',{
+                method : 'GET'
+            })
+            .then((data)=>data.json())
+            .then((data)=>{
+                if(data.mobile) return setMobile(data.mobile);
+                console.log(data);
+            })
+            .catch((data)=>{console.log(data)})
+        }
+        getVerify();
+    },[])
 
     //total input value
     let total = value.one+value.two+value.three+value.four+value.five+value.six ;
@@ -44,7 +59,7 @@ function Varify({setFetchData,isAuthorized}) {
             })
         }
         //varify otp via api call
-        await fetch('/auth/varify',{
+        await fetch('/auth/verify',{
             method : 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -53,7 +68,7 @@ function Varify({setFetchData,isAuthorized}) {
         })
         .then(data=>data.json())
         .then(data=>{
-            if(data.varify){
+            if(data.verify){
                 setFetchData(true);
                 navigate('/');
             }
@@ -83,9 +98,7 @@ function Varify({setFetchData,isAuthorized}) {
             }
         })
         .catch(err=>{console.log(err.message)})
-
     }
-
     //console.log(errors)
   return (
     <div className="h-screen py-20 px-3">
@@ -94,7 +107,7 @@ function Varify({setFetchData,isAuthorized}) {
                 <div className="w-full">
                     <div className="bg-white h-80 py-3 rounded text-center">
                         <h1 className="text-2xl text-sky-900 font-bold ">OTP Verification</h1>
-                        <div className="flex flex-col mt-4"> <span>Enter the OTP you received at</span> <span className="font-bold">{isAuthorized.user?.mobile ? `${isAuthorized.user.mobile.slice(0,6)} . . . . . ${isAuthorized.user.mobile.slice(11)}`: ''}</span> </div>
+                        <div className="flex flex-col mt-4"> <span>Enter the OTP you received at</span> <span className="font-bold">{mobile ? `${mobile.slice(0,6)} . . . . . ${mobile.slice(11)}`: ''}</span> </div>
                         {errors.common ? <div className=' text-red-600'>{`! ${errors.common.msg}`}</div> : '' } 
                         <div name="otp" className="flex flex-row justify-center text-center px-2 mt-5"> 
                             <input onChange={otpValue} className="m-2 border h-10 w-10 text-center form-control rounded hover:border-pink-500" type="text" name="one" maxLength="1"  /> 
@@ -116,4 +129,4 @@ function Varify({setFetchData,isAuthorized}) {
   )
 }
 
-export default Varify
+export default Verify

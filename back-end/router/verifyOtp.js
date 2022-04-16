@@ -2,14 +2,38 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const { Otp } = require('../Model/optModel');
 const bcrypt = require('bcrypt');
-const { signedCookie } = require('cookie-parser');
+const uniqid = require('uniqid');
+const { SignupUser } = require('../Model/signupSchema');
 
-const routerVarifyOtp = express.Router();
+const routerVerifyOtp = express.Router();
 
 
-routerVarifyOtp.post('/',async(req,res,next)=>{
+routerVerifyOtp.get('/',async (req,res)=>{
+    try{
+        const auth_cookie = req.signedCookies[process.env.auth_cookie_token_name] || '';     
+        //varify access token 
+        const data = jwt.verify(auth_cookie,process.env.jwt_secret);
+        const Otpresponse = await Otp.find({mobile : data.mobile});
+        
+        res.status(200).json({mobile : data.mobile})
+    }
+    catch(err){
+        res.status(404).json({
+            errors : {
+                common : {
+                    msg : 'errors founds'
+                }
+            }
+        })
+    }
+    
+})
+
+routerVerifyOtp.post('/',async(req,res,next)=>{
     
     try{
+        const verifyUniqId = uniqid('verify-');
+        console.log(verifyUniqId);
         if(req.user){
             return res.status(200).json({
                 varify: true,
@@ -44,14 +68,25 @@ routerVarifyOtp.post('/',async(req,res,next)=>{
                 console.log(jwtResponse);
 
             //set a cookie name as varify
-            res.cookie(process.env.varify_auth_cookie_token_name,jwtResponse,{maxAge: Number(new Date())+(1000*120),signed: true,httpOnly:true}) 
+            res.cookie(verifyUniqId,jwtResponse,{maxAge: Number(new Date())+(1000*120),signed: true,httpOnly:true}) 
             
             //delete all otp after varify
             await Otp.deleteMany({mobile : data.mobile});
+
+            //update users verify
+            await SignupUser.updateOne(
+                {
+                    mobile : data.mobile
+                },
+                {
+                    $push : {
+                        verify : [verifyUniqId]
+                    }
+                }
+            );
             
             res.status(200).json({
-                varify: true,
-                success : true,
+                verify: true,
                 message : {
                     common : {
                         msg : 'successfully verified'
@@ -61,6 +96,7 @@ routerVarifyOtp.post('/',async(req,res,next)=>{
         }
         else{
             res.status(404).json({
+
                 errors : {
                     common : {
                         msg : 'required valid otp'
@@ -83,6 +119,6 @@ routerVarifyOtp.post('/',async(req,res,next)=>{
 });
 
 module.exports ={
-    routerVarifyOtp
+    routerVerifyOtp
 }
 

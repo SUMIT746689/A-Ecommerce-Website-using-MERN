@@ -6,22 +6,22 @@ const CLIENT_URL = 'http://localhost:3000/';
 
 const googleRouter = express.Router();
 
-googleRouter.get("/login/failed",(req,res,next)=>{
-    res.status(404).json(false);
-})
 
 googleRouter.get("/login/success",(req,res,next)=>{
-    
     console.log(req.user)
     res.redirect(CLIENT_URL)
-    // console.log(req.user);
-    // if (req.user){
-    //     res.status(200).json(true);
-    // }
-    // else{
-    //     res.end();
-    // }
 })
+
+googleRouter.get("/login/failed",(req,res,next)=>{
+    res.status(404).json({
+        errors : {
+            common : {
+                msg : 'Google Login failed'
+            }
+        }
+    });
+})
+
 
 googleRouter.get('/',passport.authenticate("google", { scope: ["profile"] }))
 

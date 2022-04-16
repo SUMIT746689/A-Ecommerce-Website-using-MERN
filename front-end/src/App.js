@@ -13,7 +13,7 @@ import Products from './components/products/Products';
 import {PrivateRoute, ProtectedRoute} from './utilities/ProtectedRoute';
 import ErrorPage from './components/errorPage/ErrorPage';
 import { useEffect, useState } from "react";
-import Varify from './components/authentication/varify/Varify';
+import Verify from './components/authentication/verify/Verify';
 import Footer from './components/footer/Footer';
 
 function App() {
@@ -34,6 +34,7 @@ function App() {
     },[fetchData]);
   return (
     <BrowserRouter>
+    {/* <Loader/> */}
       <Nav isAuthorized={isAuthorized} setIsAuthorized={setIsAuthorized}/>
       <Routes>
         <Route path='/home' element={<Home/>}/>
@@ -46,15 +47,15 @@ function App() {
         
         <Route path='/auth' >
 
-          <Route path='varify' element={
+          <Route path='verify' element={
             <PrivateRoute isAuthorized={isAuthorized}>
-              <Varify setFetchData={setFetchData} isAuthorized ={isAuthorized}/>
+              <Verify setFetchData={setFetchData} isAuthorized ={isAuthorized}/>
             </PrivateRoute>
           }/>
           
           <Route path='login' element={
             <PrivateRoute isAuthorized={isAuthorized}>
-              <Login setIsAuthorized={setIsAuthorized} />
+              <Login fetchData={fetchData} setFetchData={setFetchData} setIsAuthorized={setIsAuthorized} />
             </PrivateRoute>
           }/>
           <Route path='signup' element={
@@ -68,7 +69,7 @@ function App() {
         <Route path='*' element={<ErrorPage/>}/>
         
       </Routes>
-      {isAuthorized ? <Footer/> : '' }
+      {isAuthorized.user ? <Footer/> : '' }
       
     </BrowserRouter>
   );

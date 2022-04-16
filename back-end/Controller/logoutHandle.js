@@ -9,7 +9,13 @@ const logoutHandle = async (req,res)=>{
         if(req.user){
             req.logOut();
         }
-        res.status(200).json(false);
+        res.status(200).json({
+            message : {
+                common : {
+                    msg : 'successfully logout'
+                }
+            }
+        });
     }
     catch(err){
         console.log(err.message)
