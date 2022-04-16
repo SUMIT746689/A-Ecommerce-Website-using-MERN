@@ -2,14 +2,17 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const { Otp } = require('../Model/optModel');
 const bcrypt = require('bcrypt');
-const { signedCookie } = require('cookie-parser');
+const otpGenerator = require('otp-generator');
+const { SignupUser } = require('../Model/signupSchema');
 
-const routerVarifyOtp = express.Router();
+
+const routerResendOtp = express.Router();
 
 
-routerVarifyOtp.post('/',async(req,res,next)=>{
+routerResendOtp.post('/',async(req,res,next)=>{
     
     try{
+        //check is google or other social site have or not
         if(req.user){
             return res.status(200).json({
                 varify: true,
@@ -27,30 +30,26 @@ routerVarifyOtp.post('/',async(req,res,next)=>{
         
         //varify access token 
         const data = jwt.verify(auth_cookie,process.env.jwt_secret);
-        const Otpresponse = await Otp.find({mobile : data.mobile});
-        
-        //compare if token is correct or not  
-        const isbcrypt = await bcrypt.compare(req.body.value,Otpresponse[Otpresponse.length-1]?.otp || '')
-        
-        console.log(isbcrypt);
+        const signupResponse = await SignupUser.findOne({mobile : data.mobile});
+        console.log(signupResponse.length);
+        if(signupResponse>0){
+            //otp salt genarate
+            const otpSalt = bcrypt.genSaltSync(Number(process.env.salt));
+            //otp generate
+            const otpGenarate = otpGenerator.generate(6, { upperCaseAlphabets: false, specialChars: false });
+            console.log(otpGenarate)
+            //otp hashing to save database
+            const otpPass = await bcrypt.hash(otpGenarate,otpSalt);
+            console.log(otpPass)
+            //send otp hash password to database
+            const otp = await Otp({
+                mobile : signupResponse.mobile,
+                otp : otpPass
+            })
+            await otp.save();
 
-        if(isbcrypt){
-
-            //create a varify jwt response
-            const jwtResponse = jwt.sign({
-                mobile :Otpresponse[Otpresponse.length-1].mobile
-            },
-                process.env.verify_jwt_secret);
-                console.log(jwtResponse);
-
-            //set a cookie name as varify
-            res.cookie(process.env.varify_auth_cookie_token_name,jwtResponse,{maxAge: Number(new Date())+(1000*120),signed: true,httpOnly:true}) 
-            
-            //delete all otp after varify
-            await Otp.deleteMany({mobile : data.mobile});
-            
             res.status(200).json({
-                varify: true,
+                varify : false,
                 success : true,
                 message : {
                     common : {
@@ -63,7 +62,7 @@ routerVarifyOtp.post('/',async(req,res,next)=>{
             res.status(404).json({
                 errors : {
                     common : {
-                        msg : 'required valid otp'
+                        msg : 'login first'
                     }
                 }
             })
@@ -83,6 +82,6 @@ routerVarifyOtp.post('/',async(req,res,next)=>{
 });
 
 module.exports ={
-    routerVarifyOtp
+    routerResendOtp
 }
 

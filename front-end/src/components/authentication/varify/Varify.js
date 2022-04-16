@@ -65,6 +65,27 @@ function Varify({setFetchData,isAuthorized}) {
         .catch(err=>{console.log(err.message)})
         console.log('clicked');
     }
+
+    //varify OTP resend handle
+    const otpResend = async() =>{
+        //set errors null
+        setErrors({});
+        
+        //varify otp via api call
+        await fetch('/auth/resendotp',{
+            method : 'POST'
+        })
+        .then(data=>data.json())
+        .then(data=>{
+
+            if(data.errors){
+                setErrors(data.errors);
+            }
+        })
+        .catch(err=>{console.log(err.message)})
+
+    }
+
     //console.log(errors)
   return (
     <div className="h-screen py-20 px-3">
@@ -83,10 +104,10 @@ function Varify({setFetchData,isAuthorized}) {
                             <input onChange={otpValue} className="m-2 border h-10 w-10 text-center form-control rounded hover:border-pink-500" type="text" name="five" maxLength="1"  /> 
                             <input onChange={otpValue} className="m-2 border h-10 w-10 text-center form-control rounded hover:border-pink-500" type="text" name="six" maxLength="1"  /> 
                         </div>
-                        <button onClick={varifyHandle} type='button' className="flex mx-auto mt-4 px-6 py-1 font-medium border-2 rounded-md border-emerald-600 lg:inline-block lg:mt-0 text-teal-700 hover:text-teal-700 hover:border-teal-400 ease-in-out transition-all">
+                        <button onClick={varifyHandle} type='button' className="flex mx-auto mt-4 px-6 py-1 font-medium border-2 rounded-md border-emerald-600 lg:inline-block lg:mt-0 text-teal-700 hover:text-teal-700 hover:border-teal-400 ease-in-out active:bg-slate-100">
                             Submit
                         </button>
-                        <div className="flex justify-center text-center mt-5"> <a className="flex items-center text-blue-700 hover:text-blue-900 cursor-pointer"><span className="font-bold">Resend OTP</span><i className='bx bx-caret-right ml-1'></i></a> </div>
+                        <div className="flex justify-center text-center mt-5"> <button onClick={otpResend} className="flex items-center text-blue-700 hover:text-blue-900 cursor-pointer"><span className="font-bold">Resend OTP</span><i className='bx bx-caret-right ml-1'></i></button> </div>
                     </div>
                 </div>
             </div>

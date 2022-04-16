@@ -14,6 +14,7 @@ import {PrivateRoute, ProtectedRoute} from './utilities/ProtectedRoute';
 import ErrorPage from './components/errorPage/ErrorPage';
 import { useEffect, useState } from "react";
 import Varify from './components/authentication/varify/Varify';
+import Footer from './components/footer/Footer';
 
 function App() {
     const [isAuthorized,setIsAuthorized] = useState(false);
@@ -67,6 +68,8 @@ function App() {
         <Route path='*' element={<ErrorPage/>}/>
         
       </Routes>
+      {isAuthorized ? <Footer/> : '' }
+      
     </BrowserRouter>
   );
 }
