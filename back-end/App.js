@@ -20,6 +20,7 @@ const { githubRouter } = require('./router/githubRouter');
 const { facebookRouter } = require('./router/facebookRouter');
 const { routerVerifyOtp } = require('./router/verifyOtp');
 const { routerResendOtp } = require('./router/resendOtp');
+const { forgotPasswordRouter } = require('./router/forgotpassword');
 
 //create a application
 const app = express();
@@ -66,6 +67,7 @@ app.use('/auth/verify',routerVerifyOtp);
 app.use('/auth/resendotp',routerResendOtp);
 app.use('/auth/login',routerLogin);
 app.use('/auth/logout',logoutrouter);
+app.use('/auth/forgotpassword',forgotPasswordRouter);
 app.use('/home',homerouter);
 app.use('/isAuth',isAuthRouter);
 
