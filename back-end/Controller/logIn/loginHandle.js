@@ -40,18 +40,21 @@ async function loginHandle(req,res,next){
                 //send a cookie 
                 res.cookie(process.env.auth_cookie_token_name,jwtResponse, { maxAge: new Date (Number(process.env.expireTime)), httpOnly: true,signed :true })
                 
-                let verifyId = '';
+                let verifyId = 's';
 
-                if(databaseResponse.verify.length>0 && Object.keys(req.signedCookies)?.length>0){
+                if(databaseResponse.verify?.length>0 && Object.keys(req.signedCookies)?.length>0){
                     //check if verify token id founds in database
-                    Object.keys(req.signedCookies).forEach((value)=>{
-                        if(value.includes(databaseResponse.verify)){
-                            verifyId = value;
-                        }
-                        
+                    Object.keys(req.signedCookies).forEach(async(value)=>{
+    
+                        await databaseResponse.verify.forEach((verify_Id)=>{
+                            if(value.includes(verify_Id)){
+                                verifyId = value;
+                                console.log({verifyId});
+                            }
+                        })
                     })
                 }
-                
+                console.log(verifyId);
                 //check varify token is correct or not
                 jwt.verify(req.signedCookies[verifyId],process.env.verify_jwt_secret,async (err)=>{
                     if(err){

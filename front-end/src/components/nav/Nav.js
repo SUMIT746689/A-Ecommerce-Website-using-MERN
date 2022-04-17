@@ -1,9 +1,9 @@
-import { useState,useEffect,useRef } from 'react';
+import { useState,useRef } from 'react';
 import { Link } from 'react-router-dom';
 import style from './Nav.module.css';
 import defaultUserImage from '../../images/defaultUserPhoto.svg'
 
-export default function Nav({isAuthorized,setIsAuthorized}) {
+export default function Nav({isAuthorized,setFetchData}) {
 
     const [showDropDown,setShowDropDown] = useState(false);
     const dropDownElement = useRef();
@@ -14,7 +14,7 @@ export default function Nav({isAuthorized,setIsAuthorized}) {
             method : 'POST'
         })
         .then(res=>res.json())
-        .then(data=>{setIsAuthorized(false)})
+        .then(data=>{setFetchData((e)=>!e)})
         .catch((err)=>{console.log(err)})
     }
 
@@ -39,7 +39,7 @@ export default function Nav({isAuthorized,setIsAuthorized}) {
         </div>
         <div>
         {   
-            !isAuthorized ? 
+            !isAuthorized.user ? 
                 <div className="lg:flex w-20 lg:w-auto">
             
                     <Link to="/auth/login" className="inline-block text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-teal-500 hover:bg-white mt-4 lg:mt-0 mr-3" >Login</Link>
@@ -86,7 +86,7 @@ export default function Nav({isAuthorized,setIsAuthorized}) {
             </div>
             <div>
             {   
-                !isAuthorized ? 
+                !isAuthorized.user ? 
                     <div className="lg:flex w-20 lg:w-auto">
                         <Link to="/auth/login" className="inline-block text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-teal-500 hover:bg-white mt-4 lg:mt-0 mr-3" >Login</Link>
                         <Link to="/auth/signup" className="inline-block text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-teal-500 hover:bg-white mt-4 lg:mt-0" >Signup</Link>

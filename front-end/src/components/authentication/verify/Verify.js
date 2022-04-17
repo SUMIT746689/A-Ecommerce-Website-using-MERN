@@ -40,10 +40,8 @@ function Verify({setFetchData}) {
 
     //total input value
     let total = value.one+value.two+value.three+value.four+value.five+value.six ;
-    
     console.log(total.length !== 6);
 
-    
     async function varifyHandle(){
 
         //set errors null
@@ -51,10 +49,8 @@ function Verify({setFetchData}) {
         //check if 6 no input or not
         if(total.length !== 6) {
             return setErrors({
-                errors : {
-                    common : {
-                        msg : 'required 6 valid input'
-                    }
+                common : {
+                    msg : 'required 6 valid input'
                 }
             })
         }

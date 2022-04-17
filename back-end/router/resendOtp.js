@@ -32,7 +32,7 @@ routerResendOtp.post('/',async(req,res,next)=>{
         const data = jwt.verify(auth_cookie,process.env.jwt_secret);
         const signupResponse = await SignupUser.findOne({mobile : data.mobile});
         console.log(signupResponse.length);
-        if(signupResponse>0){
+        if(Object.keys(signupResponse)?.length>0){
             //otp salt genarate
             const otpSalt = bcrypt.genSaltSync(Number(process.env.salt));
             //otp generate

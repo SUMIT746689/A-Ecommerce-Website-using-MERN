@@ -36,19 +36,23 @@ isAuthRouter.get('/',async (req,res)=>{
             const databaseResponse = await SignupUser.findOne({email : data.email},{password:0});
             let verifyId = 's';
             console.log(databaseResponse);
-            console.log(databaseResponse.verify?.length,databaseResponse.verify.includes(Object.keys(req.signedCookies)));
+
             if(databaseResponse.verify?.length>0 && Object.keys(req.signedCookies)?.length>0){
                 //check if verify token id founds in database
-                Object.keys(req.signedCookies).forEach((value)=>{
-                    if(value.includes(databaseResponse.verify)){
-                        verifyId = value;
-                        console.log(value)
-                    }
+                Object.keys(req.signedCookies).forEach(async(value)=>{
+
+                    await databaseResponse.verify.forEach((verify_Id)=>{
+                        if(value.includes(verify_Id)){
+                            verifyId = value;
+                            console.log({verifyId});
+                        }
+                    })
                     
                 })
             }
+            console.log({value :verifyId})
             const verifydata = jwt.verify(req.signedCookies[verifyId],process.env.verify_jwt_secret);
-            console.log({verifydata});
+            console.log(verifydata);
             res.status(200).json({
                 user : databaseResponse,
                 message : {
@@ -70,8 +74,6 @@ isAuthRouter.get('/',async (req,res)=>{
             }
         });
     }
-    
-    
 })
 
 module.exports={

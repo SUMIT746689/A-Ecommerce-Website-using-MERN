@@ -15,6 +15,7 @@ import ErrorPage from './components/errorPage/ErrorPage';
 import { useEffect, useState } from "react";
 import Verify from './components/authentication/verify/Verify';
 import Footer from './components/footer/Footer';
+import ForgotPassword from './components/authentication/forgotpassword/ForgotPassword';
 
 function App() {
     const [isAuthorized,setIsAuthorized] = useState(false);
@@ -35,7 +36,7 @@ function App() {
   return (
     <BrowserRouter>
     {/* <Loader/> */}
-      <Nav isAuthorized={isAuthorized} setIsAuthorized={setIsAuthorized}/>
+      <Nav isAuthorized={isAuthorized} setFetchData={setFetchData}/>
       <Routes>
         <Route path='/home' element={<Home/>}/>
         <Route path='/' element={<Home/>}/>
@@ -46,7 +47,9 @@ function App() {
         }/>
         
         <Route path='/auth' >
-
+          <Route  path='forgotpassword'
+            element={<ForgotPassword/>}
+          />
           <Route path='verify' element={
             <PrivateRoute isAuthorized={isAuthorized}>
               <Verify setFetchData={setFetchData} isAuthorized ={isAuthorized}/>
