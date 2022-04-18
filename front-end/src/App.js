@@ -48,7 +48,7 @@ function App() {
         
         <Route path='/auth' >
           <Route  path='forgotpassword'
-            element={<ForgotPassword/>}
+            element={<ForgotPassword setFetchData={setFetchData}/>}
           />
           <Route path='verify' element={
             <PrivateRoute isAuthorized={isAuthorized}>

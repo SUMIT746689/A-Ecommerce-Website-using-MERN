@@ -1,4 +1,4 @@
-import {useState} from 'react'
+import {useState,useRef} from 'react'
 import { useNavigate } from 'react-router-dom';
 
 function ForgotPassword({setFetchData}) {
@@ -6,8 +6,6 @@ function ForgotPassword({setFetchData}) {
 const [forgotpasswordNumber,setFogotPasswordNumber] = useState('');
 const [forgotpasswordNumberError,setFogotPasswordNumberError] = useState('');
 const [optGenarateSuccess,setOptGenarateSuccess] = useState(false);
-
-const [mobile,setMobile] = useState('');
 const [value,setValue] = useState([{
     one : '',
     two : '',
@@ -16,10 +14,15 @@ const [value,setValue] = useState([{
     five : '',
     six : ''
 }]);
-
 const [errors,setErrors] =useState({});
-const navigate = useNavigate()
 
+const [resetPassword,setResetPassword] = useState(false);
+const [resetPasswordValue,setResetPasswordValue] = useState({newpassword:'',confirmnewpassword :''});
+const [resetPasswordValueError,setResetPasswordValueError] = useState({});
+
+
+const navigate = useNavigate()
+const otpInput =  useRef()
 
 //handle input forgot password number
 const forgotpasswordNumberhandle = (e)=>{
@@ -97,13 +100,13 @@ async function varifyHandle(){
         headers: {
             'Content-Type': 'application/json'
         },
-        body : JSON.stringify({value :total})
+        body : JSON.stringify({value :total,mobile :'+88'+forgotpasswordNumber})
     })
     .then(data=>data.json())
     .then(data=>{
         if(data.verify){
-            setFetchData(true);
-            navigate('/');
+            setResetPassword(true);
+            // navigate('/');
         }
         console.log(data);
         if(data.errors){
@@ -118,19 +121,72 @@ async function varifyHandle(){
 const otpResend = async() =>{
     //set errors null
     setErrors({});
-    
+    //set otp input null 
+    otpInput.current= '';
     //varify otp via api call
-    await fetch('/auth/resendotp',{
-        method : 'POST'
+    await fetch('/auth/forgotpassword/otpreset',{
+        method : 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body : JSON.stringify({mobile :'+88'+forgotpasswordNumber})
     })
     .then(data=>data.json())
     .then(data=>{
-
         if(data.errors){
             setErrors(data.errors);
         }
     })
     .catch(err=>{console.log(err.message)})
+}
+
+//forgot passeord new password
+const forgotpasswordReset =(e)=>{
+    console.log()
+    const value = resetPasswordValue;
+    value[e.target.name] = e.target.value;
+    setResetPasswordValue(value);
+    console.log(resetPasswordValue);
+}
+
+//user new password confirm
+const confirmPassword = async()=>{
+    setErrors({});
+    setResetPasswordValueError({})
+    console.log(resetPasswordValue.newpassword.length);
+    if(resetPasswordValue.newpassword.length === 0 && resetPasswordValue.confirmnewpassword.length === 0){
+        setResetPasswordValueError(
+            {
+                common : {
+                    msg : 'required password'
+                }
+            }
+        )
+    }
+    else if(resetPasswordValue.newpassword === resetPasswordValue.confirmnewpassword ){
+        await fetch('/auth/forgotpassword/forgotPasswordReset',{
+            method : 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body : JSON.stringify({newpassword:resetPasswordValue.newpassword})
+        })
+        .then(data=>data.json())
+        .then(data=>{
+            if(data.errors){
+                setErrors(data.errors);
+            }
+        })
+    .catch(err=>{console.log(err.message)})
+
+    }
+    else{
+        setResetPasswordValueError({
+            common : {
+                msg : 'confirm password did not mached'
+            }
+        })
+    }
 }
 
   return (
@@ -141,7 +197,7 @@ const otpResend = async() =>{
                     <div className="bg-white min-h-80 h-fit py-3 rounded text-center flex flex-col justify-center align-middle">
                         <h1 className="text-2xl text-sky-900 font-bold ">Account Reset Password</h1>
                         {
-                            !optGenarateSuccess.message ?
+                            !optGenarateSuccess.message  ?
                                 <div className="mb-4 mt-6 px-4">
                                     <label className=" block text-gray-700 text-md font-bold mb-2" htmlFor="username">
                                         Mobile
@@ -162,26 +218,43 @@ const otpResend = async() =>{
                         }
 
                         {
-                            optGenarateSuccess.message ?
+                            optGenarateSuccess.message && !resetPassword ?
                             <>
                                 {optGenarateSuccess.user?.mobile ? <div className='mt-3 font-semibold text-cyan-400 text-lg'>{optGenarateSuccess.user.mobile}</div> : ''}
                                 {errors.common ? <div className=' text-red-600'>{`! ${errors.common.msg}`}</div> : '' } 
                                 <div name="otp" className="grid grid-cols-6 md:gap-4 align-middle justify-center text-center mt-5"> 
-                                    <input onChange={otpValue} className="m-2 border h-8 w-8 md:h-10 md:w-10 text-center form-control rounded hover:border-pink-500 text-teal-600 font-medium" type="text" name="one" maxLength="1"   /> 
-                                    <input onChange={otpValue} className="m-2 border h-8 w-8 md:h-10 md:w-10 text-center form-control rounded hover:border-pink-500 text-teal-600 font-medium" type="text" name="two" maxLength="1"   /> 
-                                    <input onChange={otpValue} className="m-2 border h-8 w-8 md:h-10 md:w-10 text-center form-control rounded hover:border-pink-500 text-teal-600 font-medium" type="text" name="three" maxLength="1" /> 
-                                    <input onChange={otpValue} className="m-2 border h-8 w-8 md:h-10 md:w-10 text-center form-control rounded hover:border-pink-500 text-teal-600 font-medium" type="text" name="four" maxLength="1"  /> 
-                                    <input onChange={otpValue} className="m-2 border h-8 w-8 md:h-10 md:w-10 text-center form-control rounded hover:border-pink-500 text-teal-600 font-medium" type="text" name="five" maxLength="1"  /> 
-                                    <input onChange={otpValue} className="m-2 border h-8 w-8 md:h-10 md:w-10 text-center form-control rounded hover:border-pink-500 text-teal-600 font-medium" type="text" name="six" maxLength="1"   /> 
+                                    <input ref={otpInput} onChange={otpValue} className="m-2 border h-8 w-8 md:h-10 md:w-10 text-center form-control rounded hover:border-pink-500 text-teal-600 font-medium" type="text" name="one" maxLength="1"   /> 
+                                    <input ref={otpInput} onChange={otpValue} className="m-2 border h-8 w-8 md:h-10 md:w-10 text-center form-control rounded hover:border-pink-500 text-teal-600 font-medium" type="text" name="two" maxLength="1"   /> 
+                                    <input ref={otpInput} onChange={otpValue} className="m-2 border h-8 w-8 md:h-10 md:w-10 text-center form-control rounded hover:border-pink-500 text-teal-600 font-medium" type="text" name="three" maxLength="1" /> 
+                                    <input ref={otpInput} onChange={otpValue} className="m-2 border h-8 w-8 md:h-10 md:w-10 text-center form-control rounded hover:border-pink-500 text-teal-600 font-medium" type="text" name="four" maxLength="1"  /> 
+                                    <input ref={otpInput} onChange={otpValue} className="m-2 border h-8 w-8 md:h-10 md:w-10 text-center form-control rounded hover:border-pink-500 text-teal-600 font-medium" type="text" name="five" maxLength="1"  /> 
+                                    <input ref={otpInput} onChange={otpValue} className="m-2 border h-8 w-8 md:h-10 md:w-10 text-center form-control rounded hover:border-pink-500 text-teal-600 font-medium" type="text" name="six" maxLength="1"   /> 
                                 </div>
                                 <button onClick={varifyHandle} type='button' className="flex mx-auto mt-4 px-6 py-1 font-medium border-2 rounded-md border-emerald-600 lg:inline-block lg:mt-0 text-teal-700 hover:text-teal-700 hover:border-teal-400 ease-in-out active:bg-slate-100">
                                     Submit
                                 </button>
                                 <div className="flex justify-center text-center mt-5"> <button onClick={otpResend} className="flex items-center text-blue-700 hover:text-blue-900 cursor-pointer"><span className="font-bold">Resend OTP</span><i className='bx bx-caret-right ml-1'></i></button> </div> 
-                                </>
+                            </>
                             :
                             ''
                         }
+                        {/* handle reset password  */}
+                        {
+                            !resetPassword ?
+                            <>
+                                {resetPasswordValueError.common ? <div className=' text-red-600'>{`! ${resetPasswordValueError.common.msg}`}</div> : '' } 
+                                <div name="otp" className="flex flex-col p-4 align-middle justify-center text-center mt-5"> 
+                                    <input onChange={forgotpasswordReset} className="mb-6 shadow appearance-none border rounded w-full pl-5 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" name="newpassword" type="password" placeholder=" New password"/>
+                                    <input onChange={forgotpasswordReset} className="shadow appearance-none border rounded w-full pl-5 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" name="confirmnewpassword" type="password" placeholder="Confirm New password"/>
+                                </div>
+                                <button onClick={confirmPassword} type='button' className="mb-4 flex mx-auto mt-4 px-6 py-1 font-medium border-2 rounded-md border-emerald-600 lg:inline-block lg:mt-0 text-teal-700 hover:text-teal-700 hover:border-teal-400 ease-in-out active:bg-slate-100">
+                                    Confirm
+                                </button>
+                            </>
+                            :
+                            ''
+                        }
+                        
                     </div>
                 </div>
             </div>

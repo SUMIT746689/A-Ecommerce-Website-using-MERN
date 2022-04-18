@@ -64,8 +64,9 @@ routerVerifyOtp.post('/',async(req,res,next)=>{
             const jwtResponse = jwt.sign({
                 mobile :Otpresponse[Otpresponse.length-1].mobile
             },
-                process.env.verify_jwt_secret);
-                console.log(jwtResponse);
+                process.env.verify_jwt_secret
+            );
+            console.log(jwtResponse);
 
             //set a cookie name as varify
             res.cookie(verifyUniqId,jwtResponse,{maxAge: Number(new Date())+(1000*120),signed: true,httpOnly:true}) 
@@ -96,7 +97,6 @@ routerVerifyOtp.post('/',async(req,res,next)=>{
         }
         else{
             res.status(404).json({
-
                 errors : {
                     common : {
                         msg : 'required valid otp'
