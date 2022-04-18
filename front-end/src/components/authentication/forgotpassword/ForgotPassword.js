@@ -164,7 +164,7 @@ const confirmPassword = async()=>{
         )
     }
     else if(resetPasswordValue.newpassword === resetPasswordValue.confirmnewpassword ){
-        await fetch('/auth/forgotpassword/forgotPasswordReset',{
+        await fetch('/auth/forgotpassword/forgotpasswordreset',{
             method : 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -173,8 +173,12 @@ const confirmPassword = async()=>{
         })
         .then(data=>data.json())
         .then(data=>{
+            console.log(data);
+            if(data.message){
+                navigate('/auth/login');
+            }
             if(data.errors){
-                setErrors(data.errors);
+                setResetPasswordValueError(data.errors);
             }
         })
     .catch(err=>{console.log(err.message)})
@@ -240,9 +244,10 @@ const confirmPassword = async()=>{
                         }
                         {/* handle reset password  */}
                         {
-                            !resetPassword ?
+                            resetPassword ?
                             <>
-                                {resetPasswordValueError.common ? <div className=' text-red-600'>{`! ${resetPasswordValueError.common.msg}`}</div> : '' } 
+                                {resetPasswordValueError.common ? <div className=' text-red-600 py-3'>{`! ${resetPasswordValueError.common.msg}`}</div> : '' } 
+                                {resetPasswordValueError.newpassword ? <div className=' text-red-600'>{`! ${resetPasswordValueError.newpassword.msg}`}</div> : '' } 
                                 <div name="otp" className="flex flex-col p-4 align-middle justify-center text-center mt-5"> 
                                     <input onChange={forgotpasswordReset} className="mb-6 shadow appearance-none border rounded w-full pl-5 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" name="newpassword" type="password" placeholder=" New password"/>
                                     <input onChange={forgotpasswordReset} className="shadow appearance-none border rounded w-full pl-5 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" name="confirmnewpassword" type="password" placeholder="Confirm New password"/>

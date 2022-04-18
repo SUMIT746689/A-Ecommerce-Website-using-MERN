@@ -2,6 +2,7 @@ const express = require('express');
 const { forgotPasswordOtpReset } = require('../Controller/forgotPassword/forgotPasswordOtpReset');
 const { forgotPasswordOtpVerified } = require('../Controller/forgotPassword/forgotPasswordOtpVerified');
 const { forgotpasswordReset } = require('../Controller/forgotPassword/forgotPasswordReset/forgotPasswordReset');
+const { forgotPasswordResetAuth } = require('../Controller/forgotPassword/forgotPasswordReset/forgotPasswordResetAuth');
 const { forgotPasswordValidate, forgotPasswordValidateResultHandle } = require('../Controller/forgotPassword/forgotPasswordReset/forgotPasswordValidate');
 const { otpGenarate } = require('../Controller/forgotPassword/otpGenerate');
 const { validateforgotPassword, validationresultforgotPassword } = require('../Controller/forgotPassword/validate');
@@ -14,7 +15,7 @@ forgotPasswordRouter.post('/otpverify',forgotPasswordOtpVerified);
 
 forgotPasswordRouter.post('/otpreset',forgotPasswordOtpReset); 
 
-forgotPasswordRouter.post('/forgotpasswordreset',forgotPasswordValidate,forgotPasswordValidateResultHandle); 
+forgotPasswordRouter.post('/forgotpasswordreset',forgotPasswordResetAuth,forgotPasswordValidate,forgotPasswordValidateResultHandle,forgotpasswordReset); 
 
 module.exports={
     forgotPasswordRouter

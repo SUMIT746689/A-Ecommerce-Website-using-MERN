@@ -21,6 +21,7 @@ const otpGenarate = async(req,res,next)=>{
             otp : otpPass
         })
         await otp.save();
+        
         res.status(200).json({
             user : {
                 mobile : req.body.mobile

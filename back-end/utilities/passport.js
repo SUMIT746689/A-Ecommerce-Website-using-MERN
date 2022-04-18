@@ -18,8 +18,13 @@ passport.use(
             callbackURL: "/auth/google/callback"
         },
         async function(accessToken, refreshToken, profile, done){
-
-            console.log(profile.photos[0].value)
+            
+            //check if have any user in this id
+            const googleuser = await GoogleAuth.find({google_id : profile.id})
+            
+            if(googleuser.length > 0) return done(null,profile);
+            console.log(profile);
+            
             const goolgeAuth = await new GoogleAuth({
                 google_id : profile.id,
                 name : profile.displayName,
@@ -47,6 +52,12 @@ passport.use(
 
         async function(accessToken, refreshToken, profile, done){
 
+            //check if have any user in this id
+            const githubUser = await GithubAuth.find({github_id : profile.id})
+            
+            if(githubUser.length > 0) return done(null,profile);
+            console.log(profile);
+
             const githubAuth = await new GithubAuth ({
                 github_id : profile.id,
                 name : profile.displayName,
@@ -70,8 +81,14 @@ passport.use(
 
         async function(accessToken, refreshToken, profile, done){
 
+            //check if have any user in this id
+            const facebookUser = await FacebookAuth.find({fb_id : profile.id})
+            
+            if(facebookUser.length > 0) return done(null,profile);
+            console.log(profile);
+
             const fbAuth = await new FacebookAuth ({
-                github_id : profile.id,
+                fb_id : profile.id,
                 name : profile.displayName,
                 avatar : profile.photos[0].value,
             });

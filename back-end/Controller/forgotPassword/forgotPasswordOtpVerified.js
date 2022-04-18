@@ -33,6 +33,18 @@ try{
         //set a cookie name as varify
         res.cookie(verifyUniqId,jwtResponse,{maxAge: Number(new Date())+(1000*120),signed: true,httpOnly:true}) 
         
+
+        //set a cookie for 5 min for reset password
+        const resetCookie = jwt.sign({
+            mobile : Otpresponse[Otpresponse.length-1].mobile
+        },
+            process.env.reset_jwt_secret
+        );
+        console.log(resetCookie);
+
+        //set a cookie name as varify
+        res.cookie(process.env.reset_cookie_name,resetCookie,{maxAge: Number(new Date())+(1000*120),signed: true,httpOnly:true,maxAge : 300000,}) 
+
         //delete all otp after varify
         await Otp.deleteMany({mobile : req.body.mobile});
 
