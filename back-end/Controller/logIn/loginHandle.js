@@ -2,7 +2,8 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { Otp } = require('../../Model/optModel');
-const otpGenerator = require('otp-generator')
+const otpGenerator = require('otp-generator');
+const axios = require('axios');
 
 
 //Internal library
@@ -59,12 +60,28 @@ async function loginHandle(req,res,next){
                 jwt.verify(req.signedCookies[verifyId],process.env.verify_jwt_secret,async (err)=>{
                     if(err){
                         console.log(err.message);
-                        //create a otp in database
+                        
+                        //create a otp 
                         const otpSalt = bcrypt.genSaltSync(Number(process.env.salt));
                         
-                        const otpGenarate = otpGenerator.generate(6, { upperCaseAlphabets: false, specialChars: false });
+                        const otpGenarate = otpGenerator.generate(6, { upperCaseAlphabets: false,lowerCaseAlphabets :false, specialChars: false, });
                         console.log(otpGenarate)
-                         
+                        
+                        const mobileNoSlice = databaseResponse.mobile.slice(3);
+                        console.log(mobileNoSlice)
+                        
+                        //generate data for send mobile otp
+                        const greenWebSms = new URLSearchParams();
+                        greenWebSms.append('token', process.env.otp_send_mobile_token);
+                        greenWebSms.append('to',`${databaseResponse.mobile}`)
+                        greenWebSms.append('message',`verification code ${otpGenarate}. Available for 5 minute.`)
+
+                        //send OTP to database
+                        await axios.post('http://api.greenweb.com.bd/api.php',greenWebSms)
+                        .then(res=>{console.log(res.data)})
+                        .catch(err=>{console.log(err)})
+
+                        //save otp in database
                         const otpPass = await bcrypt.hash(otpGenarate,otpSalt);
                         console.log(otpPass)
                         
@@ -73,6 +90,8 @@ async function loginHandle(req,res,next){
                             otp : otpPass
                         })
                         await otp.save();
+
+                        
 
                         //successfully create response send            
                         res.status(200).json({

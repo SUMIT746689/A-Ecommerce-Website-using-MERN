@@ -4,6 +4,7 @@ const { Otp } = require('../Model/optModel');
 const bcrypt = require('bcrypt');
 const uniqid = require('uniqid');
 const { SignupUser } = require('../Model/signupSchema');
+const { TemporarySignupUser } = require('../Model/tempSignupSchema');
 
 const routerVerifyOtp = express.Router();
 
@@ -75,7 +76,7 @@ routerVerifyOtp.post('/',async(req,res,next)=>{
             await Otp.deleteMany({mobile : data.mobile});
 
             //update users verify
-            await SignupUser.updateOne(
+            await SignupUser.findOneAndUpdate(
                 {
                     mobile : data.mobile
                 },
@@ -85,7 +86,25 @@ routerVerifyOtp.post('/',async(req,res,next)=>{
                     }
                 }
             );
+
+            //
             
+            const response = await TemporarySignupUser.findOne({mobile : data.mobile || ''},{_id :0,createdAt:0,updatedAt:0});
+            console.log('response' + response)
+            if(response !== null){
+                console.log(response);
+                const signupUser = await SignupUser({
+                    name : response.name,
+                    email : response.email,
+                    mobile : response.mobile,
+                    password : response.password,
+                    verify : [verifyUniqId]
+                },err=>{if(err){throw Error('errors founds')}});
+
+                await signupUser.save();
+            }
+            
+            await TemporarySignupUser.deleteOne({mobile : data.mobile})
             res.status(200).json({
                 verify: true,
                 message : {
@@ -107,6 +126,7 @@ routerVerifyOtp.post('/',async(req,res,next)=>{
         
     }
     catch(err){
+        console.log(err.message);
         res.status(404).json({
             errors : {
                 common : {
