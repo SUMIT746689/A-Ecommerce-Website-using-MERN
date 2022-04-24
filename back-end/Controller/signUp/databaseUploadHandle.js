@@ -26,10 +26,10 @@ const databaseUploadHandle =async (req,res,next)=>{
         greenWebSms.append('to',`${req.body.mobile}`)
         greenWebSms.append('message',`verification code ${otpGenarate}. Available for 5 minute`)
 
-        // //send OTP to database
-        // await axios.post('http://api.greenweb.com.bd/api.php',greenWebSms)
-        // .then(res=>{console.log(res.data)})
-        // .catch(err=>{console.log(err)})
+        //send OTP to database
+        await axios.post('http://api.greenweb.com.bd/api.php',greenWebSms)
+        .then(res=>{console.log(res.data)})
+        .catch(err=>{console.log(err)})
        
         //otp hashing using bcrypt
         const otpPass = await bcrypt.hash(otpGenarate,otpSalt);

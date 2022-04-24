@@ -16,6 +16,7 @@ import { useEffect, useState } from "react";
 import Verify from './components/authentication/verify/Verify';
 import Footer from './components/footer/Footer';
 import ForgotPassword from './components/authentication/forgotpassword/ForgotPassword';
+import Dashboard from './components/dashboard/Dashboard';
 
 function App() {
     const [isAuthorized,setIsAuthorized] = useState(false);
@@ -36,15 +37,19 @@ function App() {
   return (
     <BrowserRouter>
     {/* <Loader/> */}
-      <Nav isAuthorized={isAuthorized} setFetchData={setFetchData}/>
-      <Routes>
+    <div className='lg:flex'>
+      <Nav className='lg:w-64 2xl:w-80' isAuthorized={isAuthorized} setFetchData={setFetchData}/>
+      <div className='lg:grow' >
+      <Routes >
         <Route path='/home' element={<Home/>}/>
-        <Route path='/' element={<Home/>}/>
         <Route  path='/products' element={
           <ProtectedRoute isAuthorized={isAuthorized} >
             <Products/>
           </ProtectedRoute>
         }/>
+        <Route path='/dashboard'
+            element={<Dashboard/>}
+        />
         
         <Route path='/auth' >
           <Route  path='forgotpassword'
@@ -71,12 +76,13 @@ function App() {
           }/>
          
         </Route>
-        
+        <Route path='/' element={<Home/>}/>
         <Route path='*' element={<ErrorPage/>}/>
         
       </Routes>
       {isAuthorized.user ? <Footer/> : '' }
-      
+      </div>
+    </div>
     </BrowserRouter>
   );
 }

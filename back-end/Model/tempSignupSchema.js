@@ -28,7 +28,7 @@ const temporarySignUpSchema = mongoose.Schema({
     },
     createdAt: { 
         type: Date, 
-        expires: 1000*60*30, 
+        expires: 1000*60*15, 
         default: Date.now
     }
 },
