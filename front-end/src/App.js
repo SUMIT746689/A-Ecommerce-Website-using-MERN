@@ -37,10 +37,11 @@ function App() {
   return (
     <BrowserRouter>
     {/* <Loader/> */}
-    <div className='lg:flex'>
+    <div className='lg:flex justify-center align-middle m-0 p-0 b-0'>
       <Nav className='lg:w-64 2xl:w-80' isAuthorized={isAuthorized} setFetchData={setFetchData}/>
-      <div className='lg:grow' >
+      <div className='lg:grow p-0 m-0'  >
       <Routes >
+        
         <Route path='/home' element={<Home/>}/>
         <Route  path='/products' element={
           <ProtectedRoute isAuthorized={isAuthorized} >
