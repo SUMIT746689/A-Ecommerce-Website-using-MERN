@@ -1,7 +1,9 @@
 import {useState,useEffect} from 'react'
+import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { reRenderUser } from '../../../redux/action';
 
-function Verify({setFetchData}) {
+function Verify() {
 
     const [value,setValue] = useState([{
         one : '',
@@ -12,9 +14,9 @@ function Verify({setFetchData}) {
         six : ''
     }]);
     const [mobile,setMobile] = useState('');
-
     const [errors,setErrors] =useState({});
-    const navigate = useNavigate()
+    const navigate = useNavigate();
+    const dispatch = useDispatch;
 
     function otpValue (e){
         const valueData = {...value}
@@ -65,7 +67,7 @@ function Verify({setFetchData}) {
         .then(data=>data.json())
         .then(data=>{
             if(data.verify){
-                setFetchData(true);
+                dispatch(reRenderUser());
                 navigate('/');
             }
             console.log(data);

@@ -1,7 +1,7 @@
 import {useState,useRef} from 'react'
 import { useNavigate } from 'react-router-dom';
 
-function ForgotPassword({setFetchData}) {
+function ForgotPassword() {
 
 const [forgotpasswordNumber,setFogotPasswordNumber] = useState('');
 const [forgotpasswordNumberError,setFogotPasswordNumberError] = useState('');

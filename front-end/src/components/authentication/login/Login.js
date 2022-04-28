@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import loginPageImage from '../../../images/login.svg'
+import { reRenderUser } from '../../../redux/action';
 
-export default function Login({fetchData,setFetchData}) {
+export default function Login() {
   const [formValue,setFormValue] = useState({});
   const [formResponse,setFormResponse] = useState({});
-  const navigate =  useNavigate()
+  const navigate =  useNavigate();
+  const dispatch = useDispatch();
 
   //input fields value 
   const formValueChange = (event)=>{
@@ -42,7 +45,7 @@ export default function Login({fetchData,setFetchData}) {
         }
         else if(data.message){
           console.log(data);
-          setFetchData((e)=> !e);
+          dispatch(reRenderUser())
           navigate('/');
         }
         console.log(data);

@@ -1,28 +1,41 @@
-import { useState,useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { useState,useRef,useEffect, } from 'react';
+import { Link, useParams } from 'react-router-dom';
 import style from './Nav.module.css';
 import defaultUserImage from '../../images/defaultUserPhoto.svg'
+import { useDispatch, useSelector } from 'react-redux';
+import { reRenderUser } from '../../redux/action';
 
-export default function Nav({isAuthorized,setFetchData}) {
-
+export default function Nav() {
+    //for mobile screen navbar 
     const [showDropDown,setShowDropDown] = useState(false);
-    const dropDownElement = useRef();
+    //for large screen products dropdown
+    const [productsDropdown,setProductsdropdown]=useState(false);
 
+    const dispatch = useDispatch();
+    const dropDownElement = useRef();
+    
+    const userReducer = useSelector((state)=>state.userReducer);
+    const productsCategoryReducer = useSelector((state)=>state.productCategoryReducer);
+    console.log(productsCategoryReducer);
+    
     //logout handler
     const logoutHandle = async()=>{
         await fetch ('/auth/logout',{
             method : 'POST'
         })
         .then(res=>res.json())
-        .then(data=>{setFetchData((e)=>!e)})
+        .then(data=>{
+            dispatch(reRenderUser())
+        })
         .catch((err)=>{console.log(err)})
     }
 
     const dropdownItemsHandle = ()=>{
         setShowDropDown(()=>!showDropDown);
         //showDropDown ? dropDownElement.current=dropDownElement.current + 'block' : dropDownElement.current ='hidden'
-        console.log(dropDownElement)
+        console.log(dropDownElement);
     }
+    
 
     const dropdownItems = 
     <div ref={dropDownElement} className="w-full block flex-grow lg:hidden">
@@ -30,7 +43,7 @@ export default function Nav({isAuthorized,setFetchData}) {
         <Link to="/home" className="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4">
             Home
         </Link>
-        <Link to="/products" className="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4">
+        <Link to="/products/all" className="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4">
             Products
         </Link>
         <a href="#responsive-header" className="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white">
@@ -39,7 +52,7 @@ export default function Nav({isAuthorized,setFetchData}) {
         </div>
         <div>
         {   
-            !isAuthorized.user ? 
+            !userReducer.user ? 
                 <div className="lg:flex w-20 lg:w-auto">
             
                     <Link to="/auth/login" className="inline-block text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-teal-500 hover:bg-white mt-4 lg:mt-0 mr-3" >Login</Link>
@@ -49,12 +62,12 @@ export default function Nav({isAuthorized,setFetchData}) {
                 <div className='lg:flex'>
                     <div to="/auth/login" className="flex justify-start text-sm py-2 leading-none rounded text-white  hover:border-transparent hover:text-teal-500 hover:bg-white mt-4 lg:mt-0 mr-3" >
                         {
-                            isAuthorized.user?.avatar ?
-                                <img className='border-2 rounded-full w-10' src={isAuthorized.user?.avatar} alt='userImages'/>
+                            userReducer.user?.avatar ?
+                                <img className='border-2 rounded-full w-10' src={userReducer.user?.avatar} alt='userImages'/>
                             :
                                 <img className='border-2 rounded-full w-10' src={defaultUserImage} alt='userImages'/>
                         }
-                        <div className='ml-2 pt-3'>{isAuthorized.user?.name}</div>
+                        <div className='ml-2 pt-3'>{userReducer.user?.name}</div>
                     </div> 
                     <div onClick={logoutHandle} className="inline-block text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-teal-500 hover:bg-white mt-4 lg:mt-3 lg:h-8">Log out </div>
                 </div>
@@ -73,41 +86,7 @@ export default function Nav({isAuthorized,setFetchData}) {
             <svg className="fill-current h-3 w-3" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><title>Menu</title><path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z"/></svg>
             </button>
         </div>
-        {/* <div ref={dropDownElement} className="w-full hidden flex-grow lg:flex lg:items-center lg:w-auto">
-            <div className="text-sm lg:flex-grow">
-            <Link to="/home" className="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4">
-                Home
-            </Link>
-            <Link to="/products" className="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4">
-                Products
-            </Link>
-            <a href="#responsive-header" className="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white">
-                Blog
-            </a>
-            </div>
-            <div>
-            {   
-                !isAuthorized.user ? 
-                    <div className="lg:flex w-20 lg:w-auto">
-                        <Link to="/auth/login" className="inline-block text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-teal-500 hover:bg-white mt-4 lg:mt-0 mr-3" >Login</Link>
-                        <Link to="/auth/signup" className="inline-block text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-teal-500 hover:bg-white mt-4 lg:mt-0" >Signup</Link>
-                    </div>
-                :   
-                    <div className='lg:flex'>
-                        <div to="/auth/login" className="flex justify-start text-sm  leading-none rounded transition-all text-white hover:bg-white hover:bg-opacity-80  hover:border-transparent hover:text-teal-500 mt-4 px-2 lg:mt-0 mr-3" >
-                            {isAuthorized.user?.avatar ?
-                                <img className='border-2 rounded-full w-10' src={isAuthorized.user?.avatar} alt='userImages'/>
-                            :
-                                <img className='border-2 rounded-full w-10' src={defaultUserImage} alt='userImages'/>   
-                            }
-                            <div className='ml-2 pt-3'>{isAuthorized.user?.name}</div>
-                        </div> 
-                        <div onClick={logoutHandle} className="inline-block text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-teal-500 hover:bg-white mt-4 lg:mt-1 lg:h-8">Log out </div>
-                    </div>
-            }
-            
-            </div>
-        </div>  */}
+        
         {
             showDropDown ?
             dropdownItems
@@ -116,7 +95,7 @@ export default function Nav({isAuthorized,setFetchData}) {
         }
         
     </nav>
-    <aside className="hidden lg:block lg:sticky lg:left-0 lg:top-0 lg:w-64 2xl:w-80 h-screen invisible lg:visible bg-gray-50" aria-label="Sidebar">
+    <aside className="hidden overflow-y-auto lg:block lg:sticky lg:left-0 lg:top-0 lg:w-64 2xl:w-80 h-screen invisible lg:visible bg-gray-50" aria-label="Sidebar">
         <div className="w-full overflow-y-auto py-4 px-3 bg-gray-50 rounded dark:bg-gray-800">
             <a href="https://flowbite.com" className="flex items-center pl-2.5 mb-5">
                 {/* <img src="/docs/images/logo.svg" className="h-6 mr-3 sm:h-7" alt="Flowbite Logo" /> */}
@@ -150,13 +129,27 @@ export default function Nav({isAuthorized,setFetchData}) {
                     </a>
                 </li>
                 <li>
-                    <Link to="/products" className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
-                    <svg className="flex-shrink-0 w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z" clipRule="evenodd"></path></svg>
-                    <span className="flex-1 ml-3 whitespace-nowrap">Products</span>
-                    </Link>
+                    <button onClick={()=>setProductsdropdown((data)=>!data)} type="button" className="flex items-center p-2 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700" aria-controls="dropdown-example" data-collapse-toggle="dropdown-example">
+                        <svg className="flex-shrink-0 w-6 h-6 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z" clipRule="evenodd"></path></svg>
+                        <span className="flex-1 ml-3 text-left whitespace-nowrap" sidebar-toggle-item="true">Products</span>
+                        <svg sidebar-toggle-item="true" className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd"></path></svg>
+                    </button>
+                    <ul  className={`${productsDropdown ? '':'hidden'} py-2 space-y-2`}>
+                        <li>
+                            <Link to='/products/all' className="flex items-center p-2 pl-11 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">All</Link>
+                        </li>
+                        {productsCategoryReducer ?
+                            productsCategoryReducer.map((category,index)=>
+                            <li key={index}>
+                                <Link to={`/products/${category}`} href="#" className="flex items-center p-2 pl-11 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">{category}</Link>
+                            </li>
+                        )
+                        :''
+                        }
+                    </ul>
                 </li>
                 {
-                    !isAuthorized.user ? 
+                    !userReducer.user ? 
                     <>
                         <li>
                             <Link to='/auth/login' className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
@@ -175,12 +168,12 @@ export default function Nav({isAuthorized,setFetchData}) {
                     <>
                         <li>
                             <Link to='auth/signup' className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
-                            {isAuthorized.user?.avatar ?
-                                <img className='border-2 rounded-full w-10' src={isAuthorized.user?.avatar} alt='userImages'/>
+                            {userReducer.user?.avatar ?
+                                <img className='border-2 rounded-full w-10' src={userReducer.user?.avatar} alt='userImages'/>
                             :
                                 <img className='border-2 rounded-full w-10' src={defaultUserImage} alt='userImages'/>   
                             }
-                            <span className="flex-1 ml-3 whitespace-nowrap">{isAuthorized.user?.name}</span>
+                            <span className="flex-1 ml-3 whitespace-nowrap">{userReducer.user?.name}</span>
                             </Link>
                         </li>
                         <li>
