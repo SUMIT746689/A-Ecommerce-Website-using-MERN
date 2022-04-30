@@ -41,3 +41,17 @@ export const productCategoryReducer = (state=[],action)=>{
         default : return state ;
     }
 }
+
+export const cartIdReducer = (state=[],action)=>{
+    switch(action.type){
+        case 'CARTID' :
+            sessionStorage.setItem('cart',JSON.stringify(action.payload));
+            if(sessionStorage.getItem('cart')){
+                console.log(JSON.parse(sessionStorage.getItem('cart')));
+            }
+            state = [...state,action.payload] ;
+            return state ;
+
+        default : return state ;
+    }
+}

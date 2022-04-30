@@ -20,6 +20,7 @@ import Dashboard from './components/dashboard/Dashboard';
 import { useDispatch ,useSelector} from 'react-redux';
 import { user,category,products } from './redux/action';
 import ProductDescription from './components/productDescription/ProductDescription';
+import Cart from './components/cart/Cart';
 
 
 function App() {
@@ -75,8 +76,8 @@ function App() {
   return (
     <BrowserRouter>
     {/* <Loader/> */}
-    <div className='lg:flex justify-center align-middle m-0 p-0 b-0 dark:bg-gray-900'>
-      <Nav className='lg:w-64 2xl:w-80'/>
+    <div className='lg:flex lg:justify-center lg:lign-middle m-0 p-0 b-0 dark:bg-gray-900'>
+      <Nav className='lg:min-w-fit'/>
       <div className='lg:grow p-0 m-0'  >
       <Routes >
         
@@ -89,7 +90,9 @@ function App() {
         <Route path='/dashboard'
             element={<Dashboard/>}
         />
-        
+        <Route path='/cart'
+            element={<Cart/>}
+        />
         <Route path='/auth' >
           <Route  path='forgotpassword'
             element={

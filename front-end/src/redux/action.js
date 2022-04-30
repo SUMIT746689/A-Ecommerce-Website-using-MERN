@@ -25,3 +25,13 @@ export const category = (value) =>{
         payload : value
     }
 }
+
+export const cartId = (value) =>{
+    return {
+        type : 'CARTID',
+        payload : {
+            value,
+            quantity : 1
+            }
+    }
+}

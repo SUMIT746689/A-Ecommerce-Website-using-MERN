@@ -81,7 +81,10 @@ export default function Nav() {
         <div className="flex items-center flex-shrink-0 text-white mr-6">
             <span className="font-semibold text-xl tracking-tight">Total Solution</span>
         </div>
-        <div className="block ">
+        <div className="flex justify-center align-middle">
+            <Link to='/cart' className='mr-5 fill-gray-200'>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M16.53 7l-.564 2h-15.127l-.839-2h16.53zm-14.013 6h12.319l.564-2h-13.722l.839 2zm5.983 5c-.828 0-1.5.672-1.5 1.5 0 .829.672 1.5 1.5 1.5s1.5-.671 1.5-1.5c0-.828-.672-1.5-1.5-1.5zm11.305-15l-3.432 12h-13.017l.839 2h13.659l3.474-12h1.929l.743-2h-4.195zm-6.305 15c-.828 0-1.5.671-1.5 1.5s.672 1.5 1.5 1.5 1.5-.671 1.5-1.5c0-.828-.672-1.5-1.5-1.5z"/></svg>
+            </Link>
             <button onClick={dropdownItemsHandle} className="flex items-center px-3 py-2 border rounded text-teal-200 border-teal-400 hover:text-white hover:border-white">
             <svg className="fill-current h-3 w-3" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><title>Menu</title><path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z"/></svg>
             </button>
@@ -95,7 +98,7 @@ export default function Nav() {
         }
         
     </nav>
-    <aside className="hidden overflow-y-auto lg:block lg:sticky lg:left-0 lg:top-0 lg:w-64 2xl:w-80 h-screen invisible lg:visible bg-gray-50" aria-label="Sidebar">
+    <aside className="hidden lg:overflow-y-auto lg:block lg:sticky lg:left-0 lg:top-0 min-w-fit h-screen invisible lg:visible bg-gray-50" aria-label="Sidebar">
         <div className="w-full overflow-y-auto py-4 px-3 bg-gray-50 rounded dark:bg-gray-800">
             <a href="https://flowbite.com" className="flex items-center pl-2.5 mb-5">
                 {/* <img src="/docs/images/logo.svg" className="h-6 mr-3 sm:h-7" alt="Flowbite Logo" /> */}
