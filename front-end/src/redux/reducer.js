@@ -1,5 +1,4 @@
 const initialState=0 ;
-let user = {}
 
 export const userReducer = (state=initialState,action)=>{
 
@@ -42,14 +41,27 @@ export const productCategoryReducer = (state=[],action)=>{
     }
 }
 
-export const cartIdReducer = (state=[],action)=>{
+let defaultSessionCartId = null ;
+if(sessionStorage.getItem('cart')){
+    defaultSessionCartId = JSON.parse(sessionStorage.getItem('cart'));            
+}
+
+export const cartIdReducer = (state=defaultSessionCartId,action)=>{
     switch(action.type){
         case 'CARTID' :
-            sessionStorage.setItem('cart',JSON.stringify(action.payload));
-            if(sessionStorage.getItem('cart')){
-                console.log(JSON.parse(sessionStorage.getItem('cart')));
-            }
-            state = [...state,action.payload] ;
+            
+            // if(sessionStorage.getItem('cart')){
+            //     const sessionCartId = JSON.parse(sessionStorage.getItem('cart'));
+            //     console.log(JSON.parse(sessionStorage.getItem('cart')));
+            //     state = [...sessionCartId,action.payload]
+            // }
+             
+            
+            if(state===null) state = [action.payload] ;
+            else state=[...state,action.payload];
+            
+            
+            sessionStorage.setItem('cart',JSON.stringify(state));
             return state ;
 
         default : return state ;

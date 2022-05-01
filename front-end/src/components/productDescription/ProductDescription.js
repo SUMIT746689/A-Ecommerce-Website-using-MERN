@@ -1,6 +1,6 @@
 import {useState,useEffect} from 'react'
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { cartId } from '../../redux/action';
 import ProductsRating from '../../utilities/ProductsRating';
 
@@ -10,11 +10,14 @@ function ProductDescription() {
     
     const [productDescription,setProductDescription] = useState(null);
     const [changeProductImage,setChangeProductImage] =useState()
+    const [alreadyaddedCart,setAlreadyaddedCart] = useState();
 
     const productsReducer = useSelector((state)=>state.productsReducer);
+    const cartIdReducer = useSelector((state)=>state.cartIdReducer);
     const dispatch = useDispatch();
     console.log(productId);
 
+    //get product description using id 
     useEffect(()=>{
       const productDescriptionFunction = () =>{
         if(productsReducer.products && productId){
@@ -31,6 +34,7 @@ function ProductDescription() {
     },[productId,productsReducer]);
     console.log(productDescription);
 
+    //product thumbnail set
     useEffect(()=>{
       if(productDescription && productDescription[0].thumbnail) setChangeProductImage(productDescription[0].thumbnail)
     }
@@ -43,11 +47,22 @@ function ProductDescription() {
 
     //cart button handle
     const addCartId =(id) =>{
-      dispatch(cartId(id))
+      dispatch(cartId(id));
     }
-  return (
+
+    //already cart or not
+    useEffect(()=>{
+      if(cartIdReducer?.length>0 && cartIdReducer[0] !==null && productDescription){
+        const foundCart = cartIdReducer ?  cartIdReducer.filter( (cart)=> cart?.value ===productDescription[0]._id) : null ;
+        setAlreadyaddedCart(foundCart);
+        console.log(cartIdReducer,foundCart)
+      }
+      
+    },[cartIdReducer,productDescription])
+    console.log(cartIdReducer?.length);
+    return (
   <>
-    {productDescription && productDescription ? 
+    {productDescription && productDescription?.length>0? 
       <div className='md:grid md:grid-cols-4'>
 
         {/* product title price and rating */}
@@ -107,20 +122,29 @@ function ProductDescription() {
           }
           {productDescription[0]?.stock ?
             <div className='mt-5'>
-            {
-              productDescription[0]?.stock>0 ? 
+              {
+                productDescription[0]?.stock>0 ? 
 
-              <span className="text-sm lg:text-xl bg-green-100 text-green-800 font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-green-200 dark:text-green-900">Status : {productDescription[0]?.stock} items in stock</span>
-              :
-              <span className="text-sm lg:text-xl bg-red-100 text-red-800 font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-green-200 dark:text-green-900">Status : Out of stock</span>
-            }
+                <span className="text-sm lg:text-xl bg-green-100 text-green-800 font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-green-200 dark:text-green-900">Status : {productDescription[0]?.stock} items in stock</span>
+                :
+                <span className="text-sm lg:text-xl bg-red-100 text-red-800 font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-green-200 dark:text-green-900">Status : Out of stock</span>
+              }
             </div>
             :
             ''
           }
-          <button onClick={()=>addCartId(productDescription[0]?._id)} type='button' className='lg:text-xl w-full text-teal-50 hover:border-teal-500 hover: focus:ring-4 bg-teal-700 focus:ring-teal-300 font-medium rounded-md px-10 py-2.5 lg:px-12 my-7 focus:outline-none dark:focus:ring-teal-800' >
-            Add to cart
-          </button>
+          {
+            alreadyaddedCart &&  alreadyaddedCart?.length>0 ?
+            <Link to='/cart'  type='button' className=' text-center lg:text-xl w-full text-teal-50 hover:border-teal-500 hover: focus:ring-4 bg-teal-500 focus:ring-teal-300 font-medium rounded-md px-10 py-2.5 lg:px-12 my-7 focus:outline-none dark:focus:ring-teal-800' >
+               Added into cart
+            </Link>
+            :
+            <button onClick={()=>addCartId(productDescription[0]?._id)} type='button' className='lg:text-xl w-full text-yellow-100 hover:border-yellow-500 hover: focus:ring-4 bg-yellow-700 focus:ring-yellow-300 font-medium rounded-md px-10 py-2.5 lg:px-12 my-7 focus:outline-none dark:focus:ring-yellow-800' >
+              Add to cart
+            </button>
+          }
+          
+           
           <div className='py-5'>
             <div className='text-lg 2xl:text-2xl text-teal-500 dark:text-gray-300 font-semibold py-2'>
               Description

@@ -76,7 +76,7 @@ function App() {
   return (
     <BrowserRouter>
     {/* <Loader/> */}
-    <div className='lg:flex lg:justify-center lg:lign-middle m-0 p-0 b-0 dark:bg-gray-900'>
+    <div className=' scroll-smooth lg:flex lg:justify-center lg:lign-middle m-0 p-0 b-0 dark:bg-gray-900'>
       <Nav className='lg:min-w-fit'/>
       <div className='lg:grow p-0 m-0'  >
       <Routes >
