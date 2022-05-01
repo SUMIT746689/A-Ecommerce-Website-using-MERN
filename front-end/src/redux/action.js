@@ -30,8 +30,16 @@ export const cartId = (value) =>{
     return {
         type : 'CARTID',
         payload : {
-            value,
+            id: value,
             quantity : 1
+            }
+    }
+}
+export const cartIdQuantity = (value) =>{
+    return {
+        type : 'CARTIDQUANTITY',
+        payload : {
+            ...value
             }
     }
 }

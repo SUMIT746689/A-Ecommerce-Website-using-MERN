@@ -53,7 +53,7 @@ function ProductDescription() {
     //already cart or not
     useEffect(()=>{
       if(cartIdReducer?.length>0 && cartIdReducer[0] !==null && productDescription){
-        const foundCart = cartIdReducer ?  cartIdReducer.filter( (cart)=> cart?.value ===productDescription[0]._id) : null ;
+        const foundCart = cartIdReducer ?  cartIdReducer.filter( (cart)=> cart?.id ===productDescription[0]._id) : null ;
         setAlreadyaddedCart(foundCart);
         console.log(cartIdReducer,foundCart)
       }

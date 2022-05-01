@@ -1,19 +1,19 @@
 import {useState,useEffect} from 'react'
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import taka from '../../images/taka.png'
 import plus from '../../images/plus.svg'
 import minus from '../../images/minus.svg'
+import { cartIdQuantity } from '../../redux/action';
 
 function Cart() {
     
-    const [cartId,setCartId] = useState([]);
     const [cartProducts,setCartProducts] = useState();
-    const [quantityDropdownShow,setQuantitydropdownShow] = useState(false);
     const [cartProductsQuantity,setCartProductsQuantity] = useState(1);
 
     const productsReducer = useSelector((state)=>state.productsReducer);
     const cartIdReducer = useSelector((state)=>state.cartIdReducer);
 
+    const dispatch = useDispatch();
     console.log(cartIdReducer);
     
 
@@ -21,24 +21,38 @@ function Cart() {
     useEffect(()=>{
         if(productsReducer.products && cartIdReducer?.length>0){
             const products = cartIdReducer.map((cart,index)=>{
-                return productsReducer.products.filter((value)=> cart.value.includes(value._id) )
+                return productsReducer.products.filter((value)=> cart?.id?.includes(value._id) )
             });
             setCartProducts(products);
         }
     },[cartIdReducer,productsReducer])
     
 
-    //quantity dropdown show handler
-    const quantityShowHandler=(quantity=false)=>{
-        console.log(quantity)
-        setQuantitydropdownShow((value)=>!value);
-        if(quantity) {setCartProductsQuantity(quantity)};
+    //quantity plus minus handler
+    const quantityMinusHandler =(id,stockAvailable)=>{
+        const getCart = cartIdReducer.filter((value)=>value.id === id )
+        console.log(getCart)
+        if(getCart && getCart?.length > 0 && getCart[0].quantity >1){
+            dispatch(cartIdQuantity({id,quantity:getCart[0].quantity-1}))
+        }
     }
+    const quantityPlusHandler =(id,quantity,stockAvailable)=>{
+        
+        if(cartProductsQuantity< stockAvailable ) {
+            setCartProductsQuantity((value)=>value+1)
+            console.log(stockAvailable)
+        };
+    }
+
+    useEffect(()=>{
+
+    },[])
+
     //delete cart item handle
     const deleteCartItemHandler =(deleteId)=>{
         console.log(deleteId);
     }
-    console.log(cartProducts);
+    console.log(cartIdReducer,cartProductsQuantity);
     //console.log(cartProducts)
   return (
       
@@ -66,13 +80,22 @@ function Cart() {
                                     </span>
                                 </span>
 
-                                <div className='flex'>
+                                <div className='flex mt-4'>
+
                                 {/* Quantity no  */}
-                                    <div className='mr-6 relative'>
-                                        <img src={minus} alt='minus'/>
-                                        <button onClick={()=>quantityShowHandler()} id="dropdownDefault" data-dropdown-toggle="dropdown" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-md text-sm my-4 px-4 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">Qty: {cartProductsQuantity} <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg></button>
-                                        <img src={plus} alt='plus'/>
+                                    <span className='text-center my-auto text-lg font-semibold text-gray-700 dark:text-gray-200'>Quantity :</span>
+                                    <div  className=' ml-4 mr-6 relative fill-gray-700 dark:fill-gray-200 w-36 lg:w-40'>
+                                        <div onClick={()=>quantityMinusHandler(product[0]._id,product[0].stock)} className='hover:fill-gray-500 dark:fill-gray-400 absolute left-0 w-12 top-3 lg:top-4 border-r-2 px-3'>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M0 10h24v4h-24z"/></svg>
+                                        </div>
+                                        <input type="text" className="bg-gray-50 border border-gray-300 text-teal-600 text-lg lg:text-2xl font-bold rounded-sm focus:ring-blue-500 focus:border-blue-500 block pl-14 py-2.5 w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" disabled>
+                                        {cartIdReducer[0][product[0]._id]?.category}
+                                        </input>
+                                        <div onClick={()=>quantityPlusHandler(product[0]._id,product[0].stock)} className='hover:fill-gray-500 dark:fill-gray-400 absolute right-0 w-12 px-3 top-3 lg:top-4 ml-2 border-l-2'  >
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M24 10h-10v-10h-4v10h-10v4h10v10h4v-10h10z"/></svg>
+                                        </div>
                                     </div>
+
                                     {/* delete cart */}
                                     <div onClick={()=>deleteCartItemHandler(product[0]._id)} className=' cursor-pointer text-xs 2xl:text-sm text-teal-700 dark:text-gray-200 border-x-2 px-6 my-auto'>
                                         Delete

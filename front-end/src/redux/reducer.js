@@ -63,6 +63,16 @@ export const cartIdReducer = (state=defaultSessionCartId,action)=>{
             
             sessionStorage.setItem('cart',JSON.stringify(state));
             return state ;
+        
+        case 'CARTIDQUANTITY' :
+            if(state?.length > 0 && action.payload){
+                const withoutActionPayload =  state.filter((data)=> data.id !== action.payload.id);
+                sessionStorage.setItem('cart',JSON.stringify(withoutActionPayload,action.payload));
+                return [...withoutActionPayload,action.payload] ;
+            }
+            else{
+                return state ;
+            }
 
         default : return state ;
     }
