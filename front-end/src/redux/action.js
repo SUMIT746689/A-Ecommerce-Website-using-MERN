@@ -35,9 +35,17 @@ export const cartId = (value) =>{
             }
     }
 }
+export const deleteCartId = (value) =>{
+    return {
+        type : 'DELETECARTID',
+        payload : value
+    }
+}
+
 export const cartIdQuantity = (value) =>{
     return {
         type : 'CARTIDQUANTITY',
         payload : value
     }
 }
+

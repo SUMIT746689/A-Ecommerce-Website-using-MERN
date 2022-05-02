@@ -43,28 +43,30 @@ export const productCategoryReducer = (state=[],action)=>{
 }
 
 let defaultSessionCartId = null ;
-if(sessionStorage.getItem('cart')){
-    defaultSessionCartId = JSON.parse(sessionStorage.getItem('cart'));            
+if(localStorage.getItem('cart')){
+    defaultSessionCartId = JSON.parse(localStorage.getItem('cart'));            
 }
 
 export const cartIdReducer = (state=defaultSessionCartId,action)=>{
     switch(action.type){
         case 'CARTID' :
             
-            // if(sessionStorage.getItem('cart')){
-            //     const sessionCartId = JSON.parse(sessionStorage.getItem('cart'));
-            //     console.log(JSON.parse(sessionStorage.getItem('cart')));
-            //     state = [...sessionCartId,action.payload]
-            // }
-             
             const data = state ;
             if(state===null) state = [action.payload] ;
             else state=[...data,action.payload];
             
-            
-            sessionStorage.setItem('cart',JSON.stringify(state));
+            localStorage.setItem('cart',JSON.stringify(state));
             return state ;
         
+        case 'DELETECARTID':
+            console.log(action.payload);
+            const afterDelete = state.filter((value)=> action.payload !== value.id )
+            
+            localStorage.setItem('cart',JSON.stringify(afterDelete));
+            
+            return afterDelete;
+
+
         case 'CARTIDQUANTITY' :
             if(state?.length > 0 && action.payload){
                 console.log(action.payload);
@@ -76,12 +78,9 @@ export const cartIdReducer = (state=defaultSessionCartId,action)=>{
                     else return data
                 });
 
-                sessionStorage.setItem('cart',JSON.stringify(updatedData));
+                localStorage.setItem('cart',JSON.stringify(updatedData));
                 console.log(updatedData);
-                // const withoutActionPayload =  state.filter((data)=> data.id !== action.payload.id);
-                // console.log([...withoutActionPayload,action.payload])
-                // sessionStorage.setItem('cart',JSON.stringify([...withoutActionPayload,action.payload]));
-                // state = [...withoutActionPayload,action.payload] ;
+    
                 return updatedData ;
             }
             else{

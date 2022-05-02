@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { products } from "../../redux/action"
+import { cartId, products } from "../../redux/action"
 import { Link, Navigate, useNavigate, useParams } from "react-router-dom"
 import Loader from "../loader/Loader";
 import ProductsRating from "../../utilities/ProductsRating";
@@ -8,12 +8,15 @@ import ProductsRating from "../../utilities/ProductsRating";
 
 function Products() {
 
-    const dispatch = useDispatch();
-    const ratingArray = [1,2,3,4,5];
     const [displayProducts,setDisplayProducts]=useState([]);
+    const [carts,setCarts]=useState([]);
+
     let navigate = useNavigate();
+
+    const dispatch = useDispatch();
     const productsReducer = useSelector((state)=>state.productsReducer);
-    
+    const cartIdReducer = useSelector((state)=>state.cartIdReducer);
+
     let {category} = useParams();
     
     console.log(category);
@@ -44,9 +47,20 @@ function Products() {
 
     // }
     console.log(displayProducts);
-    
-    
 
+    //add to cart handle
+    const addCartId =(id) =>{
+        dispatch(cartId(id));
+      }
+
+    //already cart or not
+    useEffect(()=>{
+        if(cartIdReducer?.length>0 && cartIdReducer[0] !==null ){
+            const data = cartIdReducer.reduce((previous,current)=> [current.id,...previous] ,[])
+            setCarts(data);
+        }
+        
+      },[cartIdReducer])
 
     return(
         <>
@@ -60,11 +74,11 @@ function Products() {
                     <img className="py-2 md:p-8 rounded-t-lg w-fit object-cover" src={product.thumbnail} alt={product.title}/>
                 </Link>
                 <div className="px-5 pb-5">
-                    <a href="#">
+                    <div>
                         <h5 className="text-sm lg:text-lg font-semibold tracking-tight text-gray-900 dark:text-white">
                             {`${product.description.slice(0,25)} ...`}
                         </h5>
-                    </a>
+                    </div>
                     <div className="flex items-center mt-2.5 mb-5">
                         {product?.rating ? 
                             <ProductsRating productRating={product.rating}/>
@@ -76,7 +90,16 @@ function Products() {
                     </div>
                     <div className="flex justify-between items-center">
                         <span className="text:md lg:text-xl font-bold text-gray-900 dark:text-white"> Taka : {product.price *80}</span>
-                        <a href="#" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-sm lg:rounded-lg text-sm px-2 py-1 lg:px-5 lg:py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Add to cart</a>
+                        {
+                            carts ?
+                                carts.includes(product._id) ?
+                                    <Link to='/cart' className=" cursor-pointer text-white bg-teal-700 hover:bg-teal-800 focus:ring-4 focus:outline-none focus:ring-teal-300 font-medium rounded-sm lg:rounded-lg text-sm px-2 py-1 lg:px-5 lg:py-2.5 text-center dark:bg-teal-600 dark:hover:bg-teal-700 dark:focus:ring-teal-800">Added into cart</Link>
+                                    :
+                                    <div onClick={()=>addCartId(product._id)} className=" cursor-pointer text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-sm lg:rounded-lg text-sm px-2 py-1 lg:px-5 lg:py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Add to cart</div>
+                            :
+                            ''
+                        }
+                        
                     </div>
                 </div>
             </div>
