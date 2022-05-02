@@ -1,14 +1,14 @@
 import {useState,useEffect} from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import taka from '../../images/taka.png'
-import plus from '../../images/plus.svg'
-import minus from '../../images/minus.svg'
+import { ReactComponent as YourSvg } from '../../images/searching-data.svg'
+
 import { cartIdQuantity } from '../../redux/action';
 
 function Cart() {
     
     const [cartProducts,setCartProducts] = useState();
-    const [cartProductsQuantity,setCartProductsQuantity] = useState(1);
+    const [cartProductsQuantity,setCartProductsQuantity] = useState();
 
     const productsReducer = useSelector((state)=>state.productsReducer);
     const cartIdReducer = useSelector((state)=>state.cartIdReducer);
@@ -30,23 +30,24 @@ function Cart() {
 
     //quantity plus minus handler
     const quantityMinusHandler =(id,stockAvailable)=>{
+        console.log(id)
         const getCart = cartIdReducer.filter((value)=>value.id === id )
-        console.log(getCart)
+        
         if(getCart && getCart?.length > 0 && getCart[0].quantity >1){
-            dispatch(cartIdQuantity({id,quantity:getCart[0].quantity-1}))
+            dispatch(cartIdQuantity({id,quantity:getCart[0].quantity-1}));
+            console.log(getCart)
         }
     }
-    const quantityPlusHandler =(id,quantity,stockAvailable)=>{
+    const quantityPlusHandler =(id,stockAvailable)=>{
         
-        if(cartProductsQuantity< stockAvailable ) {
-            setCartProductsQuantity((value)=>value+1)
-            console.log(stockAvailable)
-        };
+        const getCart = cartIdReducer.filter((value)=>value.id === id )
+        
+        if(getCart && getCart?.length > 0 && getCart[0].quantity < stockAvailable){
+            dispatch(cartIdQuantity({id,quantity:getCart[0].quantity+1}));
+            console.log(getCart)
+        }
     }
 
-    useEffect(()=>{
-
-    },[])
 
     //delete cart item handle
     const deleteCartItemHandler =(deleteId)=>{
@@ -67,7 +68,7 @@ function Cart() {
                         <div className='flex justify-center border-t-2 border-gray-300 my-7 '></div>
                         <div className='sm:grid grid-cols-6 gap-4 justify-center align-middle'>
                             <div className=' col-start-1 col-end-3  flex justify-center align-middle '>
-                                <img className='object-cover max-h-32 md:max-h-40 my-auto' src={product[0].thumbnail} alt={product[0].title}/>
+                                <img className='object-cover  my-auto' src={product[0].thumbnail} alt={product[0].title}/>
                             </div>
                             <div className='py-4 col-start-3 col-end-7'>
                                 <div className='text-gray-500 dark:text-gray-200 text-sm sm:text-lg'><span className='font-semibold'>{product[0].title}</span><br/>{product[0].category}: {product[0].description}</div>
@@ -88,12 +89,29 @@ function Cart() {
                                         <div onClick={()=>quantityMinusHandler(product[0]._id,product[0].stock)} className='hover:fill-gray-500 dark:fill-gray-400 absolute left-0 w-12 top-3 lg:top-4 border-r-2 px-3'>
                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M0 10h24v4h-24z"/></svg>
                                         </div>
-                                        <input type="text" className="bg-gray-50 border border-gray-300 text-teal-600 text-lg lg:text-2xl font-bold rounded-sm focus:ring-blue-500 focus:border-blue-500 block pl-14 py-2.5 w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" disabled>
-                                        {cartIdReducer[0][product[0]._id]?.category}
-                                        </input>
+                                        <div  className="bg-gray-50 border border-gray-300 text-teal-600 text-lg lg:text-2xl font-bold rounded-sm focus:ring-blue-500 focus:border-blue-500 block pl-14 py-2.5 w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"  >
+                                        {   
+                                            cartIdReducer && cartIdReducer?.length >0 ?
+                                                cartIdReducer.map((data,index)=>
+                                                    <span key={index}>
+                                                    {
+                                                    
+                                                    data.id === product[0]._id ?
+                                                        data.quantity
+                                                    
+                                                        :
+                                                        ''
+                                                    }
+                                                    </span>
+                                                )
+                                            :
+                                            ''
+                                        }
+                                        </div>
                                         <div onClick={()=>quantityPlusHandler(product[0]._id,product[0].stock)} className='hover:fill-gray-500 dark:fill-gray-400 absolute right-0 w-12 px-3 top-3 lg:top-4 ml-2 border-l-2'  >
                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M24 10h-10v-10h-4v10h-10v4h10v10h4v-10h10z"/></svg>
                                         </div>
+                                        
                                     </div>
 
                                     {/* delete cart */}
@@ -108,7 +126,13 @@ function Cart() {
                 }
             </div>
             :
-            ''      
+            <div className='sm:flex lg:max-w-6xl m-2 p-4 bg-gray-100 dark:bg-gray-700'>
+                
+                <YourSvg className=' h-40 md:h-52'/>
+                <div>
+                    <div className='text-gray-500 dark:text-gray-200 text-2xl 2xl:text-4xl font-semibold mb-4'>Your Cart is empty</div>
+                </div>
+            </div>      
         }
     </>
   )

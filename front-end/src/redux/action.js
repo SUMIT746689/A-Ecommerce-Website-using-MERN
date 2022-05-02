@@ -38,8 +38,6 @@ export const cartId = (value) =>{
 export const cartIdQuantity = (value) =>{
     return {
         type : 'CARTIDQUANTITY',
-        payload : {
-            ...value
-            }
+        payload : value
     }
 }
