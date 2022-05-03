@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { cartId, products } from "../../redux/action"
+import { cartItem, products } from "../../redux/action"
 import { Link, Navigate, useNavigate, useParams } from "react-router-dom"
 import Loader from "../loader/Loader";
 import ProductsRating from "../../utilities/ProductsRating";
@@ -15,7 +15,7 @@ function Products() {
 
     const dispatch = useDispatch();
     const productsReducer = useSelector((state)=>state.productsReducer);
-    const cartIdReducer = useSelector((state)=>state.cartIdReducer);
+    const cartItemReducer = useSelector((state)=>state.cartItemReducer);
 
     let {category} = useParams();
     
@@ -49,22 +49,22 @@ function Products() {
     console.log(displayProducts);
 
     //add to cart handle
-    const addCartId =(id) =>{
-        dispatch(cartId(id));
+    const addCartItem =(product) =>{
+        dispatch(cartItem(product));
       }
 
     //already cart or not
     useEffect(()=>{
-        if(cartIdReducer?.length>0 && cartIdReducer[0] !==null ){
-            const data = cartIdReducer.reduce((previous,current)=> [current.id,...previous] ,[])
+        if(cartItemReducer?.length>0 && cartItemReducer[0] !==null ){
+            const data = cartItemReducer.reduce((previous,current)=> [current._id,...previous] ,[])
             setCarts(data);
         }
         
-      },[cartIdReducer])
+      },[cartItemReducer])
 
     return(
         <>
-        <div className="grid gap-0.5  md:gap-1 lg:gap-2 mt-4 mb-4 px-0.5 md:px-1 grid-cols-2 md:grid-cols-3 2xl:grid-cols-4">
+        <div className="grid gap-0.5  md:gap-1 lg:gap-2 mt-4 mb-4 px-0.5 md:px-1 grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 3xl:grow">
             {displayProducts ?
         
                 displayProducts.map((product)=>
@@ -79,23 +79,23 @@ function Products() {
                             {`${product.description.slice(0,25)} ...`}
                         </h5>
                     </div>
-                    <div className="flex items-center mt-2.5 mb-5">
+                    <div className="flex items-center mt-2.5 mb-5 ">
                         {product?.rating ? 
                             <ProductsRating productRating={product.rating}/>
                             :
                             ''
                         
                         }
-                        <span className="bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800 ml-3">{product.rating}</span>
+                        <span className="bg-blue-100 text-blue-800 text-xs font-semibold xs:mr-2 px-1 xs:px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800 ml-3">{product.rating}</span>
                     </div>
-                    <div className="flex justify-between items-center">
-                        <span className="text:md lg:text-xl font-bold text-gray-900 dark:text-white"> Taka : {product.price *80}</span>
+                    <div className="flex sm:justify-between sm:items-center flex-col sm:flex-row">
+                        <span className="text:md lg:text-xl mr-2 font-bold text-gray-900 dark:text-white"> Taka : {product.price *80}</span>
                         {
                             carts ?
                                 carts.includes(product._id) ?
-                                    <Link to='/cart' className=" cursor-pointer text-white bg-teal-700 hover:bg-teal-800 focus:ring-4 focus:outline-none focus:ring-teal-300 font-medium rounded-sm lg:rounded-lg text-sm px-2 py-1 lg:px-5 lg:py-2.5 text-center dark:bg-teal-600 dark:hover:bg-teal-700 dark:focus:ring-teal-800">Added into cart</Link>
+                                    <Link to='/cart' className="mt-2 sm:mt-0 cursor-pointer text-white bg-teal-700 hover:bg-teal-800 focus:ring-4 focus:outline-none focus:ring-teal-300 font-medium rounded-sm lg:rounded-md text-sm px-2 py-1 lg:px-5 lg:py-2.5 text-center dark:bg-teal-600 dark:hover:bg-teal-700 dark:focus:ring-teal-800">Added into cart</Link>
                                     :
-                                    <div onClick={()=>addCartId(product._id)} className=" cursor-pointer text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-sm lg:rounded-lg text-sm px-2 py-1 lg:px-5 lg:py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Add to cart</div>
+                                    <div onClick={()=>addCartItem(product)} className=" mt-2 sm:mt-0 cursor-pointer text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-sm lg:rounded-lg text-sm px-2 py-1 lg:px-5 lg:py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Add to cart</div>
                             :
                             ''
                         }
@@ -105,8 +105,10 @@ function Products() {
             </div>
             )
             :
+            
             <Loader/>
             }
+
         </div>
         </>
     )

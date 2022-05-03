@@ -43,13 +43,15 @@ export const productCategoryReducer = (state=[],action)=>{
 }
 
 let defaultSessionCartId = null ;
-if(localStorage.getItem('cart')){
+const localStorageData = localStorage.getItem('cart') || null 
+if(localStorageData){
+    console.log(localStorageData);
     defaultSessionCartId = JSON.parse(localStorage.getItem('cart'));            
 }
 
-export const cartIdReducer = (state=defaultSessionCartId,action)=>{
+export const cartItemReducer = (state=defaultSessionCartId,action)=>{
     switch(action.type){
-        case 'CARTID' :
+        case 'CARTITEM' :
             
             const data = state ;
             if(state===null) state = [action.payload] ;
@@ -58,26 +60,32 @@ export const cartIdReducer = (state=defaultSessionCartId,action)=>{
             localStorage.setItem('cart',JSON.stringify(state));
             return state ;
         
-        case 'DELETECARTID':
+        case 'DELETECARTITEM':
             console.log(action.payload);
-            const afterDelete = state.filter((value)=> action.payload !== value.id )
+            const afterDelete = state.filter((value)=>  value._id !==action.payload  )
             
             localStorage.setItem('cart',JSON.stringify(afterDelete));
             
             return afterDelete;
 
 
-        case 'CARTIDQUANTITY' :
+        case 'CARTITEMDQUANTITYUPDATE' :
             if(state?.length > 0 && action.payload){
                 console.log(action.payload);
-
-                const updatedData = state.map((data)=>{
-                    if(data.id === action.payload.id){
-                        return action.payload
+                const copyState = state ;  
+                
+                const updatedData = copyState.map((data)=>{
+                    if(data._id === action.payload.id){
+                        const copyData = {...data}
+                        copyData['quantity'] = action.payload.quantity;
+                        console.log(copyData);
+                        return copyData ;
                     }
-                    else return data
+                    else{
+                        return data;
+                    }
                 });
-
+                
                 localStorage.setItem('cart',JSON.stringify(updatedData));
                 console.log(updatedData);
     

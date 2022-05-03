@@ -26,25 +26,25 @@ export const category = (value) =>{
     }
 }
 
-export const cartId = (value) =>{
+export const cartItem = (value) =>{
     return {
-        type : 'CARTID',
+        type : 'CARTITEM',
         payload : {
-            id: value,
+            ...value,
             quantity : 1
             }
     }
 }
-export const deleteCartId = (value) =>{
+export const deleteCartItem = (value) =>{
     return {
-        type : 'DELETECARTID',
+        type : 'DELETECARTITEM',
         payload : value
     }
 }
 
-export const cartIdQuantity = (value) =>{
+export const cartItemQuantityUpdate = (value) =>{
     return {
-        type : 'CARTIDQUANTITY',
+        type : 'CARTITEMDQUANTITYUPDATE',
         payload : value
     }
 }

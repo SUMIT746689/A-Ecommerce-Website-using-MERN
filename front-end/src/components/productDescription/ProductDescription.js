@@ -1,7 +1,7 @@
 import {useState,useEffect} from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { cartId } from '../../redux/action';
+import { cartItem } from '../../redux/action';
 import ProductsRating from '../../utilities/ProductsRating';
 
 function ProductDescription() {
@@ -13,7 +13,7 @@ function ProductDescription() {
     const [alreadyaddedCart,setAlreadyaddedCart] = useState();
 
     const productsReducer = useSelector((state)=>state.productsReducer);
-    const cartIdReducer = useSelector((state)=>state.cartIdReducer);
+    const cartItemReducer = useSelector((state)=>state.cartItemReducer);
     const dispatch = useDispatch();
     console.log(productId);
 
@@ -46,20 +46,20 @@ function ProductDescription() {
     }
 
     //cart button handle
-    const addCartId =(id) =>{
-      dispatch(cartId(id));
+    const addCartItem =(id) =>{
+      dispatch(cartItem(id));
     }
 
     //already cart or not
     useEffect(()=>{
-      if(cartIdReducer?.length>0 && cartIdReducer[0] !==null && productDescription){
-        const foundCart = cartIdReducer ?  cartIdReducer.filter( (cart)=> cart?.id ===productDescription[0]._id) : null ;
+      if(cartItemReducer?.length>0 && cartItemReducer[0] !==null && productDescription){
+        const foundCart = cartItemReducer ?  cartItemReducer.filter( (cart)=> cart?._id ===productDescription[0]._id) : null ;
         setAlreadyaddedCart(foundCart);
-        console.log(cartIdReducer,foundCart)
+        console.log(cartItemReducer,foundCart)
       }
       
-    },[cartIdReducer,productDescription])
-    console.log(cartIdReducer?.length);
+    },[cartItemReducer,productDescription])
+    console.log(cartItemReducer?.length);
     return (
   <>
     {productDescription && productDescription?.length>0? 
@@ -139,7 +139,7 @@ function ProductDescription() {
                Added into cart
             </Link>
             :
-            <button onClick={()=>addCartId(productDescription[0]?._id)} type='button' className='lg:text-xl w-full text-yellow-100 hover:border-yellow-500 hover: focus:ring-4 bg-yellow-700 focus:ring-yellow-300 font-medium rounded-md px-10 py-2.5 lg:px-12 my-7 focus:outline-none dark:focus:ring-yellow-800' >
+            <button onClick={()=>addCartItem(productDescription[0]?._id)} type='button' className='lg:text-xl w-full text-yellow-100 hover:border-yellow-500 hover: focus:ring-4 bg-yellow-700 focus:ring-yellow-300 font-medium rounded-md px-10 py-2.5 lg:px-12 my-7 focus:outline-none dark:focus:ring-yellow-800' >
               Add to cart
             </button>
           }
