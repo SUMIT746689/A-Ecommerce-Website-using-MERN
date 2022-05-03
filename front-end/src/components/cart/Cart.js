@@ -8,6 +8,11 @@ import { Link } from 'react-router-dom';
 import CartTotal from './CartTotal';
 
 function Cart() {
+
+    const [cartTotalInfo,setCartTotalInfo]=useState({
+        subTotal : 0,
+        totalPrice : 0
+      });  
     
     const cartItemReducer = useSelector((state)=>state.cartItemReducer);
 
@@ -34,6 +39,22 @@ function Cart() {
         dispatch(deleteCartItem(deleteId));
         console.log(deleteId);
     }
+
+    //cart items total price and no of item set
+    useEffect(()=>{
+        if(cartItemReducer && cartItemReducer.length>0){
+            const totalPrice = cartItemReducer?.reduce((previousValue, currentValue) => previousValue + currentValue.price*currentValue.quantity,0)
+            const subTotal = cartItemReducer?.reduce((previousValue, currentValue) => previousValue + currentValue.quantity,0)
+            console.log(totalPrice);
+            const copyCartTotalInfo = {...cartTotalInfo} ;
+            copyCartTotalInfo['totalPrice'] = totalPrice;
+            copyCartTotalInfo['subTotal'] = subTotal ;
+            
+            setCartTotalInfo((value)=>copyCartTotalInfo);
+            console.log(cartTotalInfo);
+            
+        }
+    },[cartItemReducer])
     
   return (
       
@@ -80,7 +101,7 @@ function Cart() {
                                         </div>
 
                                         {/* delete cart */}
-                                        <div onClick={()=>deleteCartItemHandler(product._id)} className=' mt-8 cursor-pointer text-xs md:text-sm 2xl:text-sm text-teal-700 dark:text-gray-200 border-x-2 px-6 my-auto'>
+                                        <div onClick={()=>deleteCartItemHandler(product._id)} className=' mt-4 xs:mt-8 cursor-pointer text-xs md:text-sm 2xl:text-sm text-teal-700 dark:text-gray-200 border-x-2 px-6 my-auto'>
                                             Delete
                                         </div>
                                     </div>
@@ -89,11 +110,19 @@ function Cart() {
                         </div>
                         )
                     }
-                    <div>SubTotal() : </div>
+                    <div className='flex justify-between align-middle xs:text-lg xl:text-3xl mt-8 px-2 py-2 bg-slate-300 dark:bg-slate-600 font-semibold text-gray-700 dark:text-gray-200'>
+                        <div>
+                            SubTotal ( <span className='text-teal-600'> Total {cartTotalInfo.subTotal} </span> ):
+                        </div>
+                        <div>
+                            <span className='text-teal-600'>{cartTotalInfo.totalPrice} </span> taka
+                        </div>
+                         
+                    </div>
                 </div>
                 {/* cart Total */}
-                <div className=' p-4 m-2 bg-gray-100'>
-                    <CartTotal cartProducts={cartItemReducer} cartItemReducer={cartItemReducer} />
+                <div className=' p-4 m-2 bg-gray-100 dark:bg-gray-600'>
+                    <CartTotal cartTotalInfo={cartTotalInfo} cartItemReducer={cartItemReducer} />
                 </div>
             </div>
             :

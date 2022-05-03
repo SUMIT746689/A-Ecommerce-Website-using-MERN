@@ -45,7 +45,7 @@ export const productCategoryReducer = (state=[],action)=>{
 let defaultSessionCartId = null ;
 const localStorageData = localStorage.getItem('cart') || null 
 if(localStorageData){
-    console.log(localStorageData);
+    
     defaultSessionCartId = JSON.parse(localStorage.getItem('cart'));            
 }
 

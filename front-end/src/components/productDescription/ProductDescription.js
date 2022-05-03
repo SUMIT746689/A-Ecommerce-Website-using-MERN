@@ -11,7 +11,7 @@ function ProductDescription() {
     const [productDescription,setProductDescription] = useState(null);
     const [changeProductImage,setChangeProductImage] =useState()
     const [alreadyaddedCart,setAlreadyaddedCart] = useState();
-
+  
     const productsReducer = useSelector((state)=>state.productsReducer);
     const cartItemReducer = useSelector((state)=>state.cartItemReducer);
     const dispatch = useDispatch();
@@ -60,6 +60,7 @@ function ProductDescription() {
       
     },[cartItemReducer,productDescription])
     console.log(cartItemReducer?.length);
+
     return (
   <>
     {productDescription && productDescription?.length>0? 
